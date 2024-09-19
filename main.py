@@ -113,6 +113,8 @@ class Player(pygame.sprite.Sprite):  # Игрок
             stena = [(153, 217, 234), (185, 122, 87), (0, 162, 232),
                      (187, 122, 87), (0, 187, 255), (55, 71, 79),
                      (38, 52, 58), (71, 92, 102)]
+        elif location == 4:
+            stena = [(2, 0, 0)]
 
         if move_left:  # Анимация игрока, когда он идет налево
             self.direction = 'left'
@@ -240,19 +242,20 @@ class Syuyumbike(pygame.sprite.Sprite):  # Сююмбике
 
 
 class Npc(pygame.sprite.Sprite):  # Нпс
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, lvl_game):
         super().__init__(all_sprites, object_group)
-        image = load_image(f'npc/traveler.jpg')
+        image = load_image(f'npc/npc/traveler.jpg')
         self.image = pygame.transform.scale(image, (60, 100))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
+        self.lvl_game = lvl_game
 
         self.mask = pygame.mask.from_surface(self.image)
 
 
-class NpcText(pygame.sprite.Sprite):  # Нпс
+class NpcText(pygame.sprite.Sprite):  # Тест нпс
     def __init__(self, pos_x, pos_y):
         super().__init__(all_sprites, object_group)
-        self.first_image = load_image(f'npc/traveler_text.jpg')
+        self.first_image = load_image(f'npc/npc/traveler_text.jpg')
         self.image = pygame.transform.scale(self.first_image, (0, 0))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
 
@@ -265,77 +268,239 @@ class NpcText(pygame.sprite.Sprite):  # Нпс
             self.image = pygame.transform.scale(self.first_image, (0, 0))
 
 
+class Seller(pygame.sprite.Sprite):  # Продавец
+    def __init__(self, pos_x, pos_y, lvl_game):
+        super().__init__(all_sprites, object_group)
+        image = load_image(f'npc/seller/seller.jpg')
+        self.image = pygame.transform.scale(image, (60, 100))
+        self.rect = self.image.get_rect().move(pos_x, pos_y)
+        self.lvl_game = lvl_game
+
+        self.mask = pygame.mask.from_surface(self.image)
+
+
+class SellerText(pygame.sprite.Sprite):  # Текст продавца
+    def __init__(self, pos_x, pos_y):
+        super().__init__(all_sprites, object_group)
+        self.first_image = load_image(f'npc/seller/seller_text.jpg')
+        self.image = pygame.transform.scale(self.first_image, (0, 0))
+        self.rect = self.image.get_rect().move(pos_x, pos_y)
+
+        self.mask = pygame.mask.from_surface(self.image)
+
+    def update(self, is_text):
+        if is_text:
+            self.image = pygame.transform.scale(self.first_image, (100, 50))
+        else:
+            self.image = pygame.transform.scale(self.first_image, (0, 0))
+
+
+def shop(tip):
+    global koef_money, koef_experience, can_lose, money
+    run_game = True
+
+    image = pygame.transform.scale(load_image(f'npc/seller/shop_{tip}.jpg'), (600, 400))
+
+    while run_game:
+        for even in pygame.event.get():
+            if even.type == pygame.QUIT:
+                terminate()
+            elif even.type == pygame.KEYDOWN:
+                if even.key == pygame.K_p:
+                    run_game = False
+                if even.key == pygame.K_e:
+                    if tip == 1 and koef_money != 6 and improving_vocabulary[1][koef_money - 1] <= money:
+                        money -= improving_vocabulary[1][koef_money - 1]
+                        koef_money += 1
+                    elif tip == 2 and koef_experience != 6 and improving_vocabulary[2][koef_experience - 1] <= money:
+                        money -= improving_vocabulary[2][koef_experience - 1]
+                        koef_experience += 1
+                    elif tip == 3 and can_lose != 6 and improving_vocabulary[3][can_lose - 1] <= money:
+                        money -= improving_vocabulary[1][can_lose - 1]
+                        can_lose += 1
+        if not run_game:
+            break
+
+        if tip == 1:
+            bye_text = f"x{koef_money}"
+            if koef_money == 6:
+                text_money = "Max лвл"
+            else:
+                text_money = f"{improving_vocabulary[1][koef_money - 1]} монет"
+            if improving_vocabulary[1][koef_money - 1] <= money:
+                color_money = (0, 255, 0)
+            else:
+                color_money = (255, 0, 0)
+        elif tip == 2:
+            bye_text = f"x{koef_experience}"
+            if koef_experience == 6:
+                text_money = "Max лвл"
+            else:
+                text_money = f"{improving_vocabulary[2][koef_experience - 1]} монет"
+            if improving_vocabulary[2][koef_experience - 1] <= money:
+                color_money = (0, 255, 0)
+            else:
+                color_money = (255, 0, 0)
+        elif tip == 3:
+            bye_text = f"x{can_lose}"
+            if can_lose == 6:
+                text_money = "Max лвл"
+            else:
+                text_money = f"{improving_vocabulary[3][can_lose - 1]} монет"
+            if improving_vocabulary[3][can_lose - 1] <= money:
+                color_money = (0, 255, 0)
+            else:
+                color_money = (255, 0, 0)
+        else:
+            bye_text = ""
+            text_money = ""
+            color_money = (0, 0, 0)
+
+        background_group.draw(screen)
+        object_group.draw(screen)
+        player_group.draw(screen)
+
+        font_2 = pygame.font.Font(os.path.join("data/fonts", "Visitor Rus.ttf"), 30)
+        experience_text_2 = font_2.render(f' experience: {experience} / {experiences[experience_index]}',
+                                          False, (0, 0, 255))
+        money_text_2 = font_2.render(f' money: {money}', False, (255, 255, 0))
+        screen.blit(experience_text_2, (0, 0))
+        screen.blit(money_text_2, (0, 30))
+
+        font_text = pygame.font.Font(os.path.join("data/fonts", "Visitor Rus.ttf"), 50)
+        fraze = font_text.render(bye_text, False, (0, 0, 0))
+
+        font_text = pygame.font.Font(os.path.join("data/fonts", "Visitor Rus.ttf"), 25)
+        fraze_2 = font_text.render(f" {text_money}", False, color_money)
+
+        screen.blit(image, (100, 70))
+        screen.blit(fraze, (350, 250))
+        screen.blit(fraze_2, (325, 350))
+
+        if text_money != "Max":
+            fraze_3 = font_text.render(f"E) Прокачать", False, (0, 0, 0))
+            screen.blit(fraze_3, (325, 380))
+
+        pygame.display.flip()
+        clock.tick(35)
+
+
 def terminate():
     pygame.quit()
     sys.exit()
 
 
-def start_mini_game():
-    global background, player, money
-    player.kill()
+def start_mini_game(game_lvl):
+    global background, player, money, background
+    delete_all()
+
     background = Background('maps/map_3.png', (900, 500))
     player = Player(400, 300)
     text_index = 0
-    win_text = 1
     run_game = True
 
-    while run_game:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                terminate()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_1:
-                    if win_text == 1:
-                        add_experience(1)
-                        money += 2
-                    else:
-                        print("Lose")
-                    run_game = False
-                if event.key == pygame.K_2:
-                    if win_text == 2:
-                        add_experience(1)
-                        money += 2
-                    else:
-                        print("Lose")
-                    run_game = False
-                if event.key == pygame.K_3:
-                    if win_text == 3:
-                        add_experience(1)
-                        money += 2
-                    else:
-                        print("Lose")
-                    run_game = False
-
+    if game_lvl == 1:
         fraze_1 = 'Переведите слово "Привет" '
         fraze_2 = '1. сәлам'
         fraze_3 = '2. әле'
         fraze_4 = '3. көн'
+        win_text = 1
+    elif game_lvl == 2:
+        fraze_1 = 'Укажите правильное окончание "В школу"'
+        fraze_2 = '1. мәктәптә'
+        fraze_3 = '2. мәктәптән'
+        fraze_4 = '3. мәктәп'
+        win_text = 2
+    elif game_lvl == 3:
+        fraze_1 = 'Игра 3'
+        fraze_2 = '1. мәктәптә'
+        fraze_3 = '2. мәктәптән'
+        fraze_4 = '3. мәктәп'
+        win_text = 2
+    elif game_lvl == 4:
+        fraze_1 = 'Игра 4'
+        fraze_2 = '1. мәктәптә'
+        fraze_3 = '2. мәктәптән'
+        fraze_4 = '3. мәктәп'
+        win_text = 2
+    elif game_lvl == 5:
+        fraze_1 = 'Игра 5'
+        fraze_2 = '1. мәктәптә'
+        fraze_3 = '2. мәктәптән'
+        fraze_4 = '3. мәктәп'
+        win_text = 2
+    else:
+        fraze_1 = 'Игра 6'
+        fraze_2 = '1. мәктәптә'
+        fraze_3 = '2. мәктәптән'
+        fraze_4 = '3. мәктәп'
+        win_text = 2
+
+    while run_game:
+        for even in pygame.event.get():
+            if even.type == pygame.QUIT:
+                terminate()
+            elif even.type == pygame.KEYDOWN:
+                if text_index > len(fraze_1) + len(fraze_2) + len(fraze_3) + len(fraze_4):
+                    if even.key == pygame.K_1:
+                        if win_text == 1:
+                            add_experience(1)
+                            add_money(1)
+                            next_mini_game(game_lvl)
+                        else:
+                            end_mini_game(game_lvl)
+                        run_game = False
+                    if even.key == pygame.K_2:
+                        if win_text == 2:
+                            add_experience(1)
+                            add_money(1)
+                            next_mini_game(game_lvl)
+                        else:
+                            end_mini_game(game_lvl)
+                        run_game = False
+                    if even.key == pygame.K_3:
+                        if win_text == 3:
+                            add_experience(1)
+                            add_money(1)
+                            next_mini_game(game_lvl)
+                        else:
+                            end_mini_game(game_lvl)
+                        run_game = False
+        if not run_game:
+            break
 
         font_text = pygame.font.Font(os.path.join("data/fonts", "Visitor Rus.ttf"), 25)
 
-        render_fraze_1 = font_text.render("", False, (0, 0, 0))
-        render_fraze_2 = font_text.render("", False, (0, 0, 0))
-        render_fraze_3 = font_text.render("", False, (0, 0, 0))
-        render_fraze_4 = font_text.render("", False, (0, 0, 0))
-
         if text_index <= len(fraze_1):
             render_fraze_1 = font_text.render(fraze_1[:text_index], False, (0, 0, 0))
+            render_fraze_2 = font_text.render("", False, (0, 0, 0))
+            render_fraze_3 = font_text.render("", False, (0, 0, 0))
+            render_fraze_4 = font_text.render("", False, (0, 0, 0))
 
         elif text_index <= len(fraze_1) + len(fraze_2):
             render_fraze_1 = font_text.render(fraze_1, False, (0, 0, 0))
             render_fraze_2 = font_text.render(fraze_2[:text_index - len(fraze_1)], False, (0, 0, 0))
+            render_fraze_3 = font_text.render("", False, (0, 0, 0))
+            render_fraze_4 = font_text.render("", False, (0, 0, 0))
 
         elif text_index <= len(fraze_1) + len(fraze_2) + len(fraze_3):
             render_fraze_1 = font_text.render(fraze_1, False, (0, 0, 0))
             render_fraze_2 = font_text.render(fraze_2, False, (0, 0, 0))
             render_fraze_3 = font_text.render(fraze_3[:text_index - len(fraze_1) - len(fraze_2)], False, (0, 0, 0))
+            render_fraze_4 = font_text.render("", False, (0, 0, 0))
 
-        elif i <= len(fraze_1) + len(fraze_2) + len(fraze_3) + len(fraze_4):
+        elif text_index < len(fraze_1) + len(fraze_2) + len(fraze_3) + len(fraze_4):
             render_fraze_1 = font_text.render(fraze_1, False, (0, 0, 0))
             render_fraze_2 = font_text.render(fraze_2, False, (0, 0, 0))
             render_fraze_3 = font_text.render(fraze_3, False, (0, 0, 0))
             render_fraze_4 = font_text.render(fraze_4[:text_index - len(fraze_1) - len(fraze_2) - len(fraze_3)], False,
                                               (0, 0, 0))
+        else:
+            render_fraze_1 = font_text.render(fraze_1, False, (0, 0, 0))
+            render_fraze_2 = font_text.render(fraze_2, False, (0, 0, 0))
+            render_fraze_3 = font_text.render(fraze_3, False, (0, 0, 0))
+            render_fraze_4 = font_text.render(fraze_4, False, (0, 0, 0))
+
         text_index += 1
 
         background_group.draw(screen)
@@ -347,89 +512,252 @@ def start_mini_game():
         screen.blit(render_fraze_4, (260, 175))
 
         pygame.display.flip()
-        clock.tick(15)
+        clock.tick(35)
+    start_location()
 
-    start_first_location()
+
+def next_mini_game(game_lvl):
+    fon = os.path.join("data/fonts", "Visitor Rus.ttf")
+    font_text = pygame.font.Font(fon, 50)
+    fraze_1 = font_text.render("Правильно", False, (0, 255, 0))
+    font_text = pygame.font.Font(fon, 25)
+    fraze_2 = font_text.render("E: Следующий", False, (0, 0, 0))
+    fraze_3 = font_text.render("P: Выйти", False, (0, 0, 0))
+
+    run_game = True
+    while run_game:
+        for even in pygame.event.get():
+            if even.type == pygame.QUIT:
+                terminate()
+            elif even.type == pygame.KEYDOWN:
+                if even.key == pygame.K_e:
+                    start_mini_game(game_lvl)
+                    run_game = False
+                if even.key == pygame.K_p:
+                    return
+        if not run_game:
+            break
+
+        background_group.draw(screen)
+        player_group.draw(screen)
+
+        screen.blit(fraze_1, (260, 85))
+        screen.blit(fraze_2, (260, 135))
+        screen.blit(fraze_3, (260, 165))
+
+        pygame.display.flip()
+        clock.tick(35)
+
+
+def end_mini_game(game_lvl):
+    global losed
+    fon = os.path.join("data/fonts", "Visitor Rus.ttf")
+    font_text = pygame.font.Font(fon, 50)
+    fraze_1 = font_text.render("Неправильно", False, (255, 0, 0))
+    font_text = pygame.font.Font(fon, 25)
+    if can_lose > losed:
+        fraze_2 = font_text.render("E: Следующий", False, (0, 0, 0))
+    else:
+        fraze_2 = font_text.render(f"Все попытки потрачены {losed} / {can_lose}", False, (0, 0, 0))
+    fraze_3 = font_text.render("P: Выйти", False, (0, 0, 0))
+
+    run_game = True
+    while run_game:
+        for even in pygame.event.get():
+            if even.type == pygame.QUIT:
+                terminate()
+            elif even.type == pygame.KEYDOWN:
+                if even.key == pygame.K_e:
+                    if can_lose > losed:
+                        losed += 1
+                        start_mini_game(game_lvl)
+                        run_game = False
+                if even.key == pygame.K_p:
+                    return
+        if not run_game:
+            break
+
+        background_group.draw(screen)
+        player_group.draw(screen)
+
+        screen.blit(fraze_1, (260, 85))
+        screen.blit(fraze_2, (260, 135))
+        screen.blit(fraze_3, (260, 165))
+
+        pygame.display.flip()
+        clock.tick(35)
 
 
 def delete_all():  # Удаление всех объектов
-    global npc, npc_text, player, camera, background, syuyumbike, door_1, door_2, door_text_1, door_text_2
+    global npc, npc_text, npc_2, npc_text_2, player, camera, background, syuyumbike, door_1, door_2, door_text_1, \
+        door_text_2, door_3, door_text_4, door_3, door_text_4, seller, seller_text, door_5, door_6, door_text_5, \
+        door_text_6
+
+    for index_sprite in all_sprites:
+        index_sprite.x = -10000000
+
     player.kill()
     npc.kill()
     npc_text.kill()
+    npc_2.kill()
+    npc_text_2.kill()
+    seller.kill()
+    seller_text.kill()
     background.kill()
     syuyumbike.kill()
     door_1.kill()
     door_2.kill()
+    door_3.kill()
+    door_4.kill()
+    door_5.kill()
+    door_6.kill()
     door_text_1.kill()
     door_text_2.kill()
+    door_text_3.kill()
+    door_text_4.kill()
+    door_text_5.kill()
+    door_text_6.kill()
 
 
 def start_first_location():  # Создание первой локации
-    global npc, npc_text, player, camera, background, syuyumbike, door_1, door_2, door_text_1, door_text_2
+    global npc, npc_text, npc_2, npc_text_2, player, camera, background, syuyumbike, door_1, door_2, door_3, door_4, \
+        door_5, door_6, door_text_1, door_text_2, door_text_3, door_text_4, door_text_5, door_text_6, \
+        seller, seller_text
     delete_all()
 
-    npc = Npc(800, 170)
+    npc = Npc(800, 170, 1)
     npc_text = NpcText(800, 110)
+    npc_2 = Npc(1000, 170, 2)
+    npc_text_2 = NpcText(1000, 110)
+    seller = Seller(1200, 170, 1)
+    seller_text = SellerText(1200, 110)
     player = Player(800, 500)
     camera = Camera()
     background = Background('maps/map_1.png', (1667, 1000))
-    syuyumbike = Syuyumbike(1100, 500, 1)
-    door_1 = Door(400, 270, 1)
-    door_2 = Door(400, 570, 3)
-    door_text_1 = DoorText(400, 210, 2)
-    door_text_2 = DoorText(400, 510, 2)
+    syuyumbike = Syuyumbike(1100, 500, min(experience_index + 1, 5))
+    door_1 = Door(400, 270, 1, True)
+    door_2 = Door(400, 570, 2, True)
+    door_3 = Door(-100000, -100000, 3, False)
+    door_4 = Door(-100000, -100000, 4, False)
+    door_5 = Door(700, 550, 5, True)
+    door_6 = Door(-100000, -100000, 6, False)
+    door_text_1 = DoorText(400, 210, door_1)
+    door_text_2 = DoorText(400, 510, door_2)
+    door_text_3 = DoorText(400, 210, door_3)
+    door_text_4 = DoorText(400, 510, door_4)
+    door_text_5 = DoorText(700, 490, door_5)
+    door_text_6 = DoorText(400, 510, door_6)
 
 
 def start_two_location():  # Создание второй локации
-    global npc, npc_text, player, camera, background, syuyumbike
+    global npc, npc_text, npc_2, npc_text_2, player, camera, background, door_1, door_2, door_3, door_4, door_5, door_6, \
+        door_text_1, door_text_2, door_text_3, door_text_4, door_text_5, door_text_6, seller, seller_text
     delete_all()
 
-    npc = Npc(800, 170)
+    npc = Npc(800, 170, 3)
     npc_text = NpcText(800, 110)
+    npc_2 = Npc(1000, 170, 4)
+    npc_text_2 = NpcText(1000, 110)
+    seller = Seller(1200, 170, 2)
+    seller_text = SellerText(1200, 110)
     player = Player(800, 500)
     camera = Camera()
     background = Background('maps/map_2.png', (1667, 1000))
-    syuyumbike = Syuyumbike(1100, 500, syuyumbike.lvl)
+    door_1 = Door(-100000, -100000, 1, False)
+    door_2 = Door(-100000, -100000, 2, False)
+    door_3 = Door(400, 270, 3, True)
+    door_4 = Door(-100000, -100000, 4, False)
+    door_5 = Door(-100000, -100000, 5, False)
+    door_6 = Door(-100000, -100000, 6, False)
+    door_text_1 = DoorText(400, 210, door_1)
+    door_text_2 = DoorText(400, 510, door_2)
+    door_text_3 = DoorText(400, 210, door_3)
+    door_text_4 = DoorText(400, 210, door_4)
+    door_text_5 = DoorText(400, 210, door_5)
+    door_text_6 = DoorText(400, 510, door_6)
 
 
 def start_three_location():  # Создание третей локации
-    global npc, npc_text, player, camera, background, syuyumbike
+    global npc, npc_text, npc_2, npc_text_2, player, camera, background, door_1, door_2, door_3, door_4, door_5, door_6, \
+        door_text_1, door_text_2, door_text_3, door_text_4, door_text_5, door_text_6, seller, seller_text
     delete_all()
 
-    npc = Npc(800, 170)
+    npc = Npc(800, 170, 5)
     npc_text = NpcText(800, 110)
+    npc_2 = Npc(1000, 170, 6)
+    npc_text_2 = NpcText(1000, 110)
+    seller = Seller(1000, 470, 3)
+    seller_text = SellerText(1000, 410)
     player = Player(800, 500)
     camera = Camera()
     background = Background('maps/map_4.png', (1667, 1000))
-    syuyumbike = Syuyumbike(1100, 500, syuyumbike.lvl)
+    door_1 = Door(-100000, -100000, 1, False)
+    door_2 = Door(-100000, -100000, 2, False)
+    door_3 = Door(-100000, -100000, 3, False)
+    door_4 = Door(400, 270, 4, True)
+    door_5 = Door(-100000, -100000, 5, False)
+    door_6 = Door(-100000, -100000, 6, False)
+    door_text_1 = DoorText(400, 210, door_1)
+    door_text_2 = DoorText(400, 510, door_2)
+    door_text_3 = DoorText(400, 210, door_3)
+    door_text_4 = DoorText(400, 210, door_4)
+    door_text_5 = DoorText(400, 210, door_5)
+    door_text_6 = DoorText(400, 510, door_6)
+
+
+def start_four_location():  # Создание третей локации
+    global npc_text_2, player, camera, background, door_1, door_2, door_3, door_4, door_5, door_6, \
+        door_text_1, door_text_2, door_text_3, door_text_4, door_text_5, door_text_6
+    delete_all()
+
+    player = Player(450, 400)
+    camera = Camera()
+    background = Background('maps/map_5.png', (900, 800))
+    door_1 = Door(-100000, -100000, 1, False)
+    door_2 = Door(-100000, -100000, 2, False)
+    door_3 = Door(-100000, -100000, 3, False)
+    door_4 = Door(-100000, -100000, 4, False)
+    door_5 = Door(-100000, -100000, 5, False)
+    door_6 = Door(600, 300, 6, True)
+    door_text_1 = DoorText(400, 210, door_1)
+    door_text_2 = DoorText(400, 510, door_2)
+    door_text_3 = DoorText(400, 210, door_3)
+    door_text_4 = DoorText(400, 210, door_4)
+    door_text_5 = DoorText(300, 240, door_5)
+    door_text_6 = DoorText(600, 240, door_6)
 
 
 def add_experience(count):
     global experience, experience_index
-    experience += count
+    experience += count * koef_experience
     if experiences[experience_index] <= experience:
         experience -= experiences[experience_index]
         experience_index += 1
         syuyumbike.update(syuyumbike.lvl + 1)
 
 
+def add_money(count):
+    global money
+    money += count * koef_money
+
+
 class Door(pygame.sprite.Sprite):  # Нпс
-    def __init__(self, pos_x, pos_y, image):
+    def __init__(self, pos_x, pos_y, image, is_open):
         super().__init__(all_sprites, object_group)
-        image = load_image(f'doors/door_{image}.png')
+        image = load_image(f'doors/door_{image}/door_{2 if is_open else 1}.png')
         self.image = pygame.transform.scale(image, (80, 100))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.mask = pygame.mask.from_surface(self.image)
+        self.is_open = is_open
 
     def update(self, image):
         self.image = pygame.transform.scale(load_image(f'doors/door_{image}.png'), (80, 100))
 
 
 class DoorText(pygame.sprite.Sprite):  # Нпс
-    def __init__(self, pos_x, pos_y, tip_text):
+    def __init__(self, pos_x, pos_y, this_door):
         super().__init__(all_sprites, object_group)
-        self.first_image = load_image(f'doors/door_text_{tip_text}.jpg')
+        self.first_image = load_image(f'doors/door_text_{1 if this_door.is_open else 2}.jpg')
         self.image = pygame.transform.scale(self.first_image, (0, 0))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
 
@@ -440,6 +768,15 @@ class DoorText(pygame.sprite.Sprite):  # Нпс
             self.image = pygame.transform.scale(self.first_image, (100, 50))
         else:
             self.image = pygame.transform.scale(self.first_image, (0, 0))
+
+
+def start_location():
+    if location == 1:
+        start_first_location()
+    elif location == 2:
+        start_two_location()
+    elif location == 3:
+        start_three_location()
 
 
 # Создание объектов всей игры
@@ -464,17 +801,42 @@ money = 0
 # Локация
 location = 1
 
+# Улучшения
+koef_experience = 1
+koef_money = 1
+can_lose = 1
+losed = 0
+
+# Словарь улучшений
+improving_vocabulary = {
+    1: [0, 20, 30, 40, 50],
+    2: [0, 200, 300, 400, 500],
+    3: [0, 300, 400, 500, 1000]
+}
+
 # Создание объектов
-npc = Npc(800, 170)
+npc = Npc(800, 170, 1)
 npc_text = NpcText(800, 110)
+npc_2 = Npc(1000, 170, 2)
+npc_text_2 = NpcText(1000, 110)
+seller = Seller(1200, 170, 1)
+seller_text = SellerText(1200, 110)
 player = Player(800, 500)
 camera = Camera()
 background = Background('maps/map_1.png', (1667, 1000))
 syuyumbike = Syuyumbike(1100, 500, 1)
-door_1 = Door(400, 270, 1)
-door_2 = Door(400, 570, 3)
-door_text_1 = DoorText(400, 210, 2)
-door_text_2 = DoorText(400, 510, 2)
+door_1 = Door(400, 270, 1, True)
+door_2 = Door(400, 570, 2, True)
+door_3 = Door(-100000, -100000, 3, False)
+door_4 = Door(-100000, -100000, 4, False)
+door_5 = Door(700, 550, 5, True)
+door_6 = Door(-100000, -100000, 6, False)
+door_text_1 = DoorText(400, 210, door_1)
+door_text_2 = DoorText(400, 510, door_2)
+door_text_3 = DoorText(400, 210, door_3)
+door_text_4 = DoorText(400, 510, door_4)
+door_text_5 = DoorText(700, 490, door_5)
+door_text_6 = DoorText(400, 510, door_6)
 
 if __name__ == '__main__':  # Запуск программы
     pygame.init()
@@ -492,12 +854,32 @@ if __name__ == '__main__':  # Запуск программы
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e:
                     if pygame.sprite.collide_mask(player, npc):
-                        start_mini_game()
-                    if pygame.sprite.collide_mask(player, door_1):
+                        losed = 0
+                        start_mini_game(npc.lvl_game)
+                    if pygame.sprite.collide_mask(player, npc_2):
+                        losed = 0
+                        start_mini_game(npc_2.lvl_game)
+                    if pygame.sprite.collide_mask(player, seller):
+                        shop(location)
+
+                    if pygame.sprite.collide_mask(player, door_1) and door_1.is_open:
                         location = 2
                         start_two_location()
-                    if pygame.sprite.collide_mask(player, door_2):
-                        print(2)
+                    if pygame.sprite.collide_mask(player, door_2) and door_2.is_open:
+                        location = 3
+                        start_three_location()
+                    if pygame.sprite.collide_mask(player, door_3) and door_3.is_open:
+                        location = 1
+                        start_first_location()
+                    if pygame.sprite.collide_mask(player, door_4) and door_4.is_open:
+                        location = 1
+                        start_first_location()
+                    if pygame.sprite.collide_mask(player, door_5) and door_5.is_open:
+                        location = 4
+                        start_four_location()
+                    if pygame.sprite.collide_mask(player, door_6) and door_6.is_open:
+                        location = 1
+                        start_first_location()
             if event.type == pygame.KEYUP:
                 player.stop()
 
@@ -520,10 +902,16 @@ if __name__ == '__main__':  # Запуск программы
         player.update(False, False, False, False)
 
         npc_text.update(pygame.sprite.collide_mask(player, npc))
+        npc_text_2.update(pygame.sprite.collide_mask(player, npc_2))
+        seller_text.update(pygame.sprite.collide_mask(player, seller))
         door_text_1.update(pygame.sprite.collide_mask(player, door_1))
         door_text_2.update(pygame.sprite.collide_mask(player, door_2))
+        door_text_3.update(pygame.sprite.collide_mask(player, door_3))
+        door_text_4.update(pygame.sprite.collide_mask(player, door_4))
+        door_text_5.update(pygame.sprite.collide_mask(player, door_5))
+        door_text_6.update(pygame.sprite.collide_mask(player, door_6))
 
-        # обновляем положение всех спрайтов
+        # Обновляем положение всех спрайтов
         for sprite in all_sprites:
             camera.apply(sprite)
         camera.update(player)
