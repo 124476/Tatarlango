@@ -1,10 +1,9 @@
-import datetime
 import os
-import random
 import sys
 
 import pygame
-import sqlite3
+from random import shuffle, randint
+import pickle
 
 
 def load_image(name, color_key=None):  # Загрузка картинки из data
@@ -318,6 +317,7 @@ def shop(tip):
                     elif tip == 3 and can_lose != 6 and improving_vocabulary[3][can_lose - 1] <= money:
                         money -= improving_vocabulary[1][can_lose - 1]
                         can_lose += 1
+                    save_game()
         if not run_game:
             break
 
@@ -399,53 +399,31 @@ def start_mini_game(game_lvl):
     text_index = 0
     run_game = True
 
-    if game_lvl == 1:
-        fraze_1 = 'Переведите слово "Привет" '
-        fraze_2 = '1. сәлам'
-        fraze_3 = '2. әле'
-        fraze_4 = '3. көн'
-        win_text = 1
-    elif game_lvl == 2:
-        fraze_1 = 'Укажите правильное окончание "В школу"'
-        fraze_2 = '1. мәктәптә'
-        fraze_3 = '2. мәктәптән'
-        fraze_4 = '3. мәктәп'
-        win_text = 2
-    elif game_lvl == 3:
-        fraze_1 = 'Игра 3'
-        fraze_2 = '1. мәктәптә'
-        fraze_3 = '2. мәктәптән'
-        fraze_4 = '3. мәктәп'
-        win_text = 2
-    elif game_lvl == 4:
-        fraze_1 = 'Игра 4'
-        fraze_2 = '1. мәктәптә'
-        fraze_3 = '2. мәктәптән'
-        fraze_4 = '3. мәктәп'
-        win_text = 2
-    elif game_lvl == 5:
-        fraze_1 = 'Игра 5'
-        fraze_2 = '1. мәктәптә'
-        fraze_3 = '2. мәктәптән'
-        fraze_4 = '3. мәктәп'
-        win_text = 2
-    else:
-        fraze_1 = 'Игра 6'
-        fraze_2 = '1. мәктәптә'
-        fraze_3 = '2. мәктәптән'
-        fraze_4 = '3. мәктәп'
-        win_text = 2
+    quests = [j for j in questions if j['tip'] == str(game_lvl)]
+
+    quest_index = randint(0, len(quests) - 1)
+    start_quest = ['answer_one', 'answer_two', 'answer_three', 'answer_four']
+    end_quest = ['answer_one', 'answer_two', 'answer_three', 'answer_four']
+    shuffle(end_quest)
+
+    fraze_1 = quests[quest_index]["question"]
+    fraze_2 = '1: ' + quests[quest_index][end_quest[start_quest.index('answer_one')]]
+    fraze_3 = '2: ' + quests[quest_index][end_quest[start_quest.index('answer_two')]]
+    fraze_4 = '3: ' + quests[quest_index][end_quest[start_quest.index('answer_three')]]
+    fraze_5 = '4: ' + quests[quest_index][end_quest[start_quest.index('answer_four')]]
+    win_text = end_quest.index('answer_one') + 1
 
     while run_game:
         for even in pygame.event.get():
             if even.type == pygame.QUIT:
                 terminate()
             elif even.type == pygame.KEYDOWN:
-                if text_index > len(fraze_1) + len(fraze_2) + len(fraze_3) + len(fraze_4):
+                if text_index > len(fraze_1) + len(fraze_2) + len(fraze_3) + len(fraze_4) + len(fraze_5):
                     if even.key == pygame.K_1:
                         if win_text == 1:
                             add_experience(1)
                             add_money(1)
+                            save_game()
                             next_mini_game(game_lvl)
                         else:
                             end_mini_game(game_lvl)
@@ -454,6 +432,7 @@ def start_mini_game(game_lvl):
                         if win_text == 2:
                             add_experience(1)
                             add_money(1)
+                            save_game()
                             next_mini_game(game_lvl)
                         else:
                             end_mini_game(game_lvl)
@@ -462,6 +441,16 @@ def start_mini_game(game_lvl):
                         if win_text == 3:
                             add_experience(1)
                             add_money(1)
+                            save_game()
+                            next_mini_game(game_lvl)
+                        else:
+                            end_mini_game(game_lvl)
+                        run_game = False
+                    if even.key == pygame.K_4:
+                        if win_text == 4:
+                            add_experience(1)
+                            add_money(1)
+                            save_game()
                             next_mini_game(game_lvl)
                         else:
                             end_mini_game(game_lvl)
@@ -476,18 +465,21 @@ def start_mini_game(game_lvl):
             render_fraze_2 = font_text.render("", False, (0, 0, 0))
             render_fraze_3 = font_text.render("", False, (0, 0, 0))
             render_fraze_4 = font_text.render("", False, (0, 0, 0))
+            render_fraze_5 = font_text.render("", False, (0, 0, 0))
 
         elif text_index <= len(fraze_1) + len(fraze_2):
             render_fraze_1 = font_text.render(fraze_1, False, (0, 0, 0))
             render_fraze_2 = font_text.render(fraze_2[:text_index - len(fraze_1)], False, (0, 0, 0))
             render_fraze_3 = font_text.render("", False, (0, 0, 0))
             render_fraze_4 = font_text.render("", False, (0, 0, 0))
+            render_fraze_5 = font_text.render("", False, (0, 0, 0))
 
         elif text_index <= len(fraze_1) + len(fraze_2) + len(fraze_3):
             render_fraze_1 = font_text.render(fraze_1, False, (0, 0, 0))
             render_fraze_2 = font_text.render(fraze_2, False, (0, 0, 0))
             render_fraze_3 = font_text.render(fraze_3[:text_index - len(fraze_1) - len(fraze_2)], False, (0, 0, 0))
             render_fraze_4 = font_text.render("", False, (0, 0, 0))
+            render_fraze_5 = font_text.render("", False, (0, 0, 0))
 
         elif text_index < len(fraze_1) + len(fraze_2) + len(fraze_3) + len(fraze_4):
             render_fraze_1 = font_text.render(fraze_1, False, (0, 0, 0))
@@ -495,11 +487,21 @@ def start_mini_game(game_lvl):
             render_fraze_3 = font_text.render(fraze_3, False, (0, 0, 0))
             render_fraze_4 = font_text.render(fraze_4[:text_index - len(fraze_1) - len(fraze_2) - len(fraze_3)], False,
                                               (0, 0, 0))
+            render_fraze_5 = font_text.render("", False, (0, 0, 0))
+
+        elif text_index < len(fraze_1) + len(fraze_2) + len(fraze_3) + len(fraze_4) + len(fraze_5):
+            render_fraze_1 = font_text.render(fraze_1, False, (0, 0, 0))
+            render_fraze_2 = font_text.render(fraze_2, False, (0, 0, 0))
+            render_fraze_3 = font_text.render(fraze_3, False, (0, 0, 0))
+            render_fraze_4 = font_text.render(fraze_4, False, (0, 0, 0))
+            render_fraze_5 = font_text.render(
+                fraze_5[:text_index - len(fraze_1) - len(fraze_2) - len(fraze_3) - len(fraze_4)], False, (0, 0, 0))
         else:
             render_fraze_1 = font_text.render(fraze_1, False, (0, 0, 0))
             render_fraze_2 = font_text.render(fraze_2, False, (0, 0, 0))
             render_fraze_3 = font_text.render(fraze_3, False, (0, 0, 0))
             render_fraze_4 = font_text.render(fraze_4, False, (0, 0, 0))
+            render_fraze_5 = font_text.render(fraze_5, False, (0, 0, 0))
 
         text_index += 1
 
@@ -510,6 +512,7 @@ def start_mini_game(game_lvl):
         screen.blit(render_fraze_2, (260, 115))
         screen.blit(render_fraze_3, (260, 145))
         screen.blit(render_fraze_4, (260, 175))
+        screen.blit(render_fraze_5, (260, 205))
 
         pygame.display.flip()
         clock.tick(35)
@@ -770,6 +773,49 @@ class DoorText(pygame.sprite.Sprite):  # Нпс
             self.image = pygame.transform.scale(self.first_image, (0, 0))
 
 
+def save_game():  # Сохранения игры
+    state = {
+        'koef_experience': koef_experience,
+        'koef_money': koef_money,
+        'can_lose': can_lose,
+        'experience': experience,
+        'experience_index': experience_index,
+        'money': money
+    }
+
+    with open('data/game_player.pkl', 'wb') as f:
+        pickle.dump(state, f)
+
+
+def load_game():  # Загрузка сохраненной игры
+    global koef_experience, koef_money, can_lose, experience, experience_index, money, questions
+    try:
+        with open('data/game_player.pkl', 'rb') as f:
+            state = pickle.load(f)
+        koef_experience = state['koef_experience']
+        koef_money = state['koef_money']
+        can_lose = state['can_lose']
+        experience = state['experience']
+        experience_index = state['koef_experience']
+        money = state['money']
+    except Exception:
+        pass
+
+    with open('data/game_db.pkl', 'rb') as f:
+        p = pickle.load(f)
+        questions = []
+        for j in p:
+            questions.append({
+                'id': bytes(j['id']).decode(),
+                'tip': bytes(j['tip']).decode(),
+                'question': bytes(j['question']).decode(),
+                'answer_one': bytes(j['answer_one']).decode(),
+                'answer_two': bytes(j['answer_two']).decode(),
+                'answer_three': bytes(j['answer_three']).decode(),
+                'answer_four': bytes(j['answer_four']).decode()
+            })
+
+
 def start_location():
     if location == 1:
         start_first_location()
@@ -807,11 +853,14 @@ koef_money = 1
 can_lose = 1
 losed = 0
 
-# Словарь улучшений
+# Словари данных
 improving_vocabulary = {
     1: [0, 20, 30, 40, 50],
     2: [0, 200, 300, 400, 500],
     3: [0, 300, 400, 500, 1000]
+}
+questions = {
+
 }
 
 # Создание объектов
@@ -838,6 +887,7 @@ door_text_4 = DoorText(400, 510, door_4)
 door_text_5 = DoorText(700, 490, door_5)
 door_text_6 = DoorText(400, 510, door_6)
 
+load_game()
 if __name__ == '__main__':  # Запуск программы
     pygame.init()
     pygame.display.set_caption('Tatarlango')
