@@ -104,8 +104,7 @@ class Player(pygame.sprite.Sprite):  # Игрок
 
         stena = []
         if location == 1:
-            stena = [(34, 177, 76), (0, 162, 232), (54, 19, 11),
-                     (0, 8, 4), (4, 28, 16), (15, 69, 10), (18, 89, 22)]
+            stena = [(110, 71, 20), (70, 43, 7), (21, 97, 21), (2, 0, 0)]
         elif location == 2:
             stena = [(2, 0, 0)]
         elif location == 3:
@@ -119,9 +118,20 @@ class Player(pygame.sprite.Sprite):  # Игрок
             self.direction = 'left'
             self.rect.x -= self.run
             self.x -= self.run
+
             if background.get_rgb(self.x, self.y) in stena:
                 self.rect.x += self.run
                 self.x += self.run
+
+            for obstacle in obstacles_group:
+                if pygame.sprite.collide_mask(player, obstacle) and obstacle.weight_flag and \
+                        player.x > obstacle.x + obstacle.weight_pos - obstacle.weight and \
+                        (player.y > obstacle.y > player.y - 10
+                         or obstacle.y - obstacle.height_pos < player.y < obstacle.y):
+                    self.rect.x += self.run
+                    self.x += self.run
+                    break
+
             if current_time - self.last_skin_change_time > 150:
                 self.last_skin_change_time = current_time
                 if self.step == 1:
@@ -145,9 +155,19 @@ class Player(pygame.sprite.Sprite):  # Игрок
             self.direction = 'right'
             self.rect.x += self.run
             self.x += self.run
+
             if background.get_rgb(self.x, self.y) in stena:
                 self.rect.x -= self.run
                 self.x -= self.run
+
+            for obstacle in obstacles_group:
+                if pygame.sprite.collide_mask(player, obstacle) and obstacle.weight_flag \
+                        and player.x > obstacle.x + obstacle.weight_pos and (player.y > obstacle.y > player.y - 10
+                                                                             or obstacle.y - obstacle.height_pos < player.y < obstacle.y):
+                    self.rect.x -= self.run
+                    self.x -= self.run
+                    break
+
             if current_time - self.last_skin_change_time > 150:
                 self.last_skin_change_time = current_time
                 if self.step == 1:
@@ -171,9 +191,17 @@ class Player(pygame.sprite.Sprite):  # Игрок
             self.direction = 'up'
             self.rect.y -= self.run
             self.y -= self.run
+
             if background.get_rgb(self.x, self.y) in stena:
                 self.rect.y += self.run
                 self.y += self.run
+
+            for obstacle in obstacles_group:
+                if pygame.sprite.collide_mask(player, obstacle) and player.y > obstacle.y > player.y - 10:
+                    self.rect.y += self.run
+                    self.y += self.run
+                    break
+
             if current_time - self.last_skin_change_time > 150:
                 self.last_skin_change_time = current_time
                 if self.step == 1:
@@ -197,9 +225,18 @@ class Player(pygame.sprite.Sprite):  # Игрок
             self.direction = 'down'
             self.rect.y += self.run
             self.y += self.run
+
             if background.get_rgb(self.x, self.y) in stena:
                 self.rect.y -= self.run
                 self.y -= self.run
+
+            for obstacle in obstacles_group:
+                if pygame.sprite.collide_mask(player,
+                                              obstacle) and obstacle.y - obstacle.height_pos < player.y < obstacle.y:
+                    self.rect.y -= self.run
+                    self.y -= self.run
+                    break
+
             if current_time - self.last_skin_change_time > 150:
                 self.last_skin_change_time = current_time
                 if self.step == 1:
@@ -224,14 +261,19 @@ class Player(pygame.sprite.Sprite):  # Игрок
 
 class Syuyumbike(pygame.sprite.Sprite):  # Сююмбике
     def __init__(self, pos_x, pos_y, lvl):
-        super().__init__(all_sprites, object_group)
+        super().__init__(all_sprites, obstacles_group)
         image = load_image(f'objects/syuyumbike/lvl_{lvl}.png')
-        self.image = pygame.transform.scale(image, (50, 100))
+        self.image = pygame.transform.scale(image, (144, 451))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
 
-        self.pos_x = pos_x
-        self.pos_y = pos_y
+        self.x = pos_x
+        self.y = pos_y + 451
         self.lvl = lvl
+        self.height = 451
+        self.height_pos = 10
+        self.weight = 0
+        self.weight_pos = 0
+        self.weight_flag = False
         self.mask = pygame.mask.from_surface(self.image)
 
     def update(self, lvl):
@@ -242,13 +284,20 @@ class Syuyumbike(pygame.sprite.Sprite):  # Сююмбике
 
 class Npc(pygame.sprite.Sprite):  # Нпс
     def __init__(self, pos_x, pos_y, lvl_game):
-        super().__init__(all_sprites, object_group)
+        super().__init__(all_sprites, obstacles_group)
         image = load_image(f'npc/npc/traveler.jpg')
         self.image = pygame.transform.scale(image, (60, 100))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.lvl_game = lvl_game
-
         self.mask = pygame.mask.from_surface(self.image)
+
+        self.x = pos_x
+        self.y = pos_y + 100
+        self.height = 100
+        self.height_pos = 10
+        self.weight = 0
+        self.weight_pos = 0
+        self.weight_flag = False
 
 
 class NpcText(pygame.sprite.Sprite):  # Тест нпс
@@ -269,13 +318,20 @@ class NpcText(pygame.sprite.Sprite):  # Тест нпс
 
 class Seller(pygame.sprite.Sprite):  # Продавец
     def __init__(self, pos_x, pos_y, lvl_game):
-        super().__init__(all_sprites, object_group)
+        super().__init__(all_sprites, obstacles_group)
         image = load_image(f'npc/seller/seller.jpg')
         self.image = pygame.transform.scale(image, (60, 100))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.lvl_game = lvl_game
-
         self.mask = pygame.mask.from_surface(self.image)
+
+        self.x = pos_x
+        self.y = pos_y + 100
+        self.height = 100
+        self.height_pos = 10
+        self.weight = 0
+        self.weight_pos = 0
+        self.weight_flag = False
 
 
 class SellerText(pygame.sprite.Sprite):  # Текст продавца
@@ -421,8 +477,8 @@ def start_mini_game(game_lvl):
                 if text_index > len(fraze_1) + len(fraze_2) + len(fraze_3) + len(fraze_4) + len(fraze_5):
                     if even.key == pygame.K_1:
                         if win_text == 1:
-                            add_experience(1)
-                            add_money(1)
+                            add_experience(game_lvl // 2 + 10000)
+                            add_money(game_lvl // 2 + 2)
                             save_game()
                             next_mini_game(game_lvl)
                         else:
@@ -430,8 +486,8 @@ def start_mini_game(game_lvl):
                         run_game = False
                     if even.key == pygame.K_2:
                         if win_text == 2:
-                            add_experience(1)
-                            add_money(1)
+                            add_experience(game_lvl // 2 + 10000)
+                            add_money(game_lvl // 2 + 2)
                             save_game()
                             next_mini_game(game_lvl)
                         else:
@@ -439,8 +495,8 @@ def start_mini_game(game_lvl):
                         run_game = False
                     if even.key == pygame.K_3:
                         if win_text == 3:
-                            add_experience(1)
-                            add_money(1)
+                            add_experience(game_lvl // 2 + 10000)
+                            add_money(game_lvl // 2 + 2)
                             save_game()
                             next_mini_game(game_lvl)
                         else:
@@ -448,8 +504,8 @@ def start_mini_game(game_lvl):
                         run_game = False
                     if even.key == pygame.K_4:
                         if win_text == 4:
-                            add_experience(1)
-                            add_money(1)
+                            add_experience(game_lvl // 2 + 10000)
+                            add_money(game_lvl // 2 + 2)
                             save_game()
                             next_mini_game(game_lvl)
                         else:
@@ -620,35 +676,39 @@ def delete_all():  # Удаление всех объектов
     door_text_4.kill()
     door_text_5.kill()
     door_text_6.kill()
+    house.kill()
+    tree.kill()
 
 
 def start_first_location():  # Создание первой локации
     global npc, npc_text, npc_2, npc_text_2, player, camera, background, syuyumbike, door_1, door_2, door_3, door_4, \
         door_5, door_6, door_text_1, door_text_2, door_text_3, door_text_4, door_text_5, door_text_6, \
-        seller, seller_text
+        seller, seller_text, tree, house
     delete_all()
 
-    npc = Npc(800, 170, 1)
-    npc_text = NpcText(800, 110)
-    npc_2 = Npc(1000, 170, 2)
-    npc_text_2 = NpcText(1000, 110)
-    seller = Seller(1200, 170, 1)
-    seller_text = SellerText(1200, 110)
-    player = Player(800, 500)
+    npc = Npc(1100, 170, 1)
+    npc_text = NpcText(1100, 110)
+    npc_2 = Npc(1300, 170, 2)
+    npc_text_2 = NpcText(1300, 110)
+    seller = Seller(1500, 170, 1)
+    seller_text = SellerText(1500, 110)
+    player = Player(1300, 800)
     camera = Camera()
-    background = Background('maps/map_1.png', (1667, 1000))
-    syuyumbike = Syuyumbike(1100, 500, min(experience_index + 1, 5))
-    door_1 = Door(400, 270, 1, True)
-    door_2 = Door(400, 570, 2, True)
+    tree = Tree(-15000, -1000000)
+    house = House(1100, 460)
+    background = Background('maps/map_1.png', (3000, 1500))
+    syuyumbike = Syuyumbike(1670, 210, experience_index + 1)
+    door_1 = Door(1240, 610, 1, experience_index >= 2)
+    door_2 = Door(1500, 700, 2, experience_index >= 4)
     door_3 = Door(-100000, -100000, 3, False)
     door_4 = Door(-100000, -100000, 4, False)
-    door_5 = Door(700, 550, 5, True)
+    door_5 = Door(1700, 560, 5, experience_index == 6)
     door_6 = Door(-100000, -100000, 6, False)
-    door_text_1 = DoorText(400, 210, door_1)
-    door_text_2 = DoorText(400, 510, door_2)
+    door_text_1 = DoorText(1240, 540, door_1)
+    door_text_2 = DoorText(1500, 630, door_2)
     door_text_3 = DoorText(400, 210, door_3)
     door_text_4 = DoorText(400, 510, door_4)
-    door_text_5 = DoorText(700, 490, door_5)
+    door_text_5 = DoorText(1700, 490, door_5)
     door_text_6 = DoorText(400, 510, door_6)
 
 
@@ -693,7 +753,7 @@ def start_three_location():  # Создание третей локации
     seller_text = SellerText(1000, 410)
     player = Player(800, 500)
     camera = Camera()
-    tree = Flowers_Tree(700, 400)
+    tree = Tree(700, 400)
     background = Background('maps/map_4.png', (1667, 1000))
     door_1 = Door(-100000, -100000, 1, False)
     door_2 = Door(-100000, -100000, 2, False)
@@ -734,7 +794,7 @@ def start_four_location():  # Создание третей локации
 def add_experience(count):
     global experience, experience_index
     experience += count * koef_experience
-    if experiences[experience_index] <= experience:
+    if experience_index != 7 and experiences[experience_index] <= experience:
         experience -= experiences[experience_index]
         experience_index += 1
         syuyumbike.update(syuyumbike.lvl + 1)
@@ -747,12 +807,20 @@ def add_money(count):
 
 class Door(pygame.sprite.Sprite):  # Нпс
     def __init__(self, pos_x, pos_y, image, is_open):
-        super().__init__(all_sprites, object_group)
+        super().__init__(all_sprites, obstacles_group)
         image = load_image(f'doors/door_{image}/door_{2 if is_open else 1}.png')
         self.image = pygame.transform.scale(image, (80, 100))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.mask = pygame.mask.from_surface(self.image)
         self.is_open = is_open
+
+        self.x = pos_x
+        self.y = pos_y + 100
+        self.height = 100
+        self.height_pos = 10
+        self.weight = 0
+        self.weight_pos = 0
+        self.weight_flag = False
 
     def update(self, image):
         self.image = pygame.transform.scale(load_image(f'doors/door_{image}.png'), (80, 100))
@@ -774,13 +842,36 @@ class DoorText(pygame.sprite.Sprite):  # Нпс
             self.image = pygame.transform.scale(self.first_image, (0, 0))
 
 
-class Flowers_Tree(pygame.sprite.Sprite):
+class Tree(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
-        super().__init__(all_sprites, trees_group)
+        super().__init__(all_sprites, obstacles_group, trees_group)
         self.image = load_image('objects/tree_of_heaven.png')
         self.image = pygame.transform.scale(self.image, (100, 160))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.mask = pygame.mask.from_surface(self.image)
+        self.x = pos_x
+        self.y = pos_y + 150
+        self.height = 160
+        self.height_pos = 10
+        self.weight = 0
+        self.weight_pos = 0
+        self.weight_flag = False
+
+
+class House(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(all_sprites, obstacles_group, trees_group)
+        self.image = load_image('objects/house.png')
+        self.image = pygame.transform.scale(self.image, (280, 250))
+        self.rect = self.image.get_rect().move(pos_x, pos_y)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.x = pos_x
+        self.y = pos_y + 250
+        self.height = 210
+        self.height_pos = 100
+        self.weight = 280
+        self.weight_pos = 10
+        self.weight_flag = True
 
 
 def save_game():  # Сохранения игры
@@ -806,7 +897,7 @@ def load_game():  # Загрузка сохраненной игры
         koef_money = state['koef_money']
         can_lose = state['can_lose']
         experience = state['experience']
-        experience_index = state['koef_experience']
+        experience_index = state['experience_index']
         money = state['money']
     except Exception:
         pass
@@ -846,11 +937,12 @@ background_group = pygame.sprite.Group()
 camera_group = pygame.sprite.Group()
 object_group = pygame.sprite.Group()
 trees_group = pygame.sprite.Group()
+obstacles_group = pygame.sprite.Group()
 
 # Опыт
 experience = 0
 experience_index = 0
-experiences = [5, 30, 50, 100, 250]
+experiences = [5, 50, 200, 500, 1000, 1500, 3000]
 
 # Монеты
 money = 0
@@ -866,40 +958,43 @@ losed = 0
 
 # Словари данных
 improving_vocabulary = {
-    1: [0, 20, 30, 40, 50],
-    2: [0, 200, 300, 400, 500],
-    3: [0, 300, 400, 500, 1000]
+    1: [15, 50, 200, 500, 1500],
+    2: [80, 300, 600, 1500, 3000],
+    3: [50, 200, 500, 800, 1500]
 }
 questions = {
 
 }
 
+# Загрузка игры
+load_game()
+
 # Создание объектов
-npc = Npc(800, 170, 1)
-npc_text = NpcText(800, 110)
-npc_2 = Npc(1000, 170, 2)
-npc_text_2 = NpcText(1000, 110)
-seller = Seller(1200, 170, 1)
-seller_text = SellerText(1200, 110)
-player = Player(800, 500)
+npc = Npc(1100, 170, 1)
+npc_text = NpcText(1100, 110)
+npc_2 = Npc(1300, 170, 2)
+npc_text_2 = NpcText(1300, 110)
+seller = Seller(1500, 170, 1)
+seller_text = SellerText(1500, 110)
+player = Player(1300, 800)
 camera = Camera()
-tree = Flowers_Tree(700, 400)
-background = Background('maps/map_1.png', (1667, 1000))
-syuyumbike = Syuyumbike(1100, 500, 1)
-door_1 = Door(400, 270, 1, True)
-door_2 = Door(400, 570, 2, True)
+tree = Tree(1500, 500)
+house = House(1100, 460)
+background = Background('maps/map_1.png', (3000, 1500))
+syuyumbike = Syuyumbike(1670, 210, experience_index + 1)
+door_1 = Door(1240, 610, 1, experience_index >= 2)
+door_2 = Door(1500, 700, 2, experience_index >= 4)
 door_3 = Door(-100000, -100000, 3, False)
 door_4 = Door(-100000, -100000, 4, False)
-door_5 = Door(700, 550, 5, True)
+door_5 = Door(1700, 560, 5, experience_index == 6)
 door_6 = Door(-100000, -100000, 6, False)
-door_text_1 = DoorText(400, 210, door_1)
-door_text_2 = DoorText(400, 510, door_2)
+door_text_1 = DoorText(1240, 540, door_1)
+door_text_2 = DoorText(1500, 630, door_2)
 door_text_3 = DoorText(400, 210, door_3)
 door_text_4 = DoorText(400, 510, door_4)
-door_text_5 = DoorText(700, 490, door_5)
+door_text_5 = DoorText(1700, 490, door_5)
 door_text_6 = DoorText(400, 510, door_6)
 
-load_game()
 if __name__ == '__main__':  # Запуск программы
     pygame.init()
     pygame.display.set_caption('Tatarlango')
@@ -978,15 +1073,28 @@ if __name__ == '__main__':  # Запуск программы
             camera.apply(sprite)
         camera.update(player)
 
+        obstacles_up_group = pygame.sprite.Group()
+        obstacles_down_group = pygame.sprite.Group()
+
+        for i in obstacles_group:
+            if i.y < player.y:
+                obstacles_up_group.add(i)
+            else:
+                obstacles_down_group.add(i)
+
         background_group.draw(screen)
-        object_group.draw(screen)
+        obstacles_up_group.draw(screen)
         player_group.draw(screen)
-        trees_group.draw(screen)
+        obstacles_down_group.draw(screen)
+        object_group.draw(screen)
 
         font = pygame.font.Font(os.path.join("data/fonts", "Visitor Rus.ttf"), 30)
-        experience_text = font.render(f' experience: {experience} / {experiences[experience_index]}',
-                                      False, (0, 0, 255))
-        money_text = font.render(f' money: {money}', False, (255, 255, 0))
+        if experience_index < 6:
+            experien_text = f' опыт: {experience} / {experiences[experience_index]}'
+        else:
+            experien_text = f' макс'
+        experience_text = font.render(experien_text, False, (0, 0, 255))
+        money_text = font.render(f' монеты: {money}', False, (255, 255, 0))
         screen.blit(experience_text, (0, 0))
         screen.blit(money_text, (0, 30))
 
