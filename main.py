@@ -416,17 +416,17 @@ def shop(tip):
         object_group.draw(screen)
         player_group.draw(screen)
 
-        font_2 = pygame.font.Font(os.path.join("data/fonts", "Visitor Rus.ttf"), 30)
+        font_2 = pygame.font.Font(os.path.join("data/fonts", "Blazma-Regular.ttf"), 30)
         experience_text_2 = font_2.render(f' experience: {experience} / {experiences[experience_index]}',
                                           False, (0, 0, 255))
         money_text_2 = font_2.render(f' money: {money}', False, (255, 255, 0))
         screen.blit(experience_text_2, (0, 0))
         screen.blit(money_text_2, (0, 30))
 
-        font_text = pygame.font.Font(os.path.join("data/fonts", "Visitor Rus.ttf"), 50)
+        font_text = pygame.font.Font(os.path.join("data/fonts", "Blazma-Regular.ttf"), 50)
         fraze = font_text.render(bye_text, False, (0, 0, 0))
 
-        font_text = pygame.font.Font(os.path.join("data/fonts", "Visitor Rus.ttf"), 25)
+        font_text = pygame.font.Font(os.path.join("data/fonts", "Blazma-Regular.ttf"), 25)
         fraze_2 = font_text.render(f" {text_money}", False, color_money)
 
         screen.blit(image, (100, 70))
@@ -477,7 +477,7 @@ def start_mini_game(game_lvl):
                 if text_index > len(fraze_1) + len(fraze_2) + len(fraze_3) + len(fraze_4) + len(fraze_5):
                     if even.key == pygame.K_1:
                         if win_text == 1:
-                            add_experience(game_lvl // 2 + 10000)
+                            add_experience(game_lvl // 2 + 1)
                             add_money(game_lvl // 2 + 2)
                             save_game()
                             next_mini_game(game_lvl)
@@ -486,7 +486,7 @@ def start_mini_game(game_lvl):
                         run_game = False
                     if even.key == pygame.K_2:
                         if win_text == 2:
-                            add_experience(game_lvl // 2 + 10000)
+                            add_experience(game_lvl // 2 + 1)
                             add_money(game_lvl // 2 + 2)
                             save_game()
                             next_mini_game(game_lvl)
@@ -495,7 +495,7 @@ def start_mini_game(game_lvl):
                         run_game = False
                     if even.key == pygame.K_3:
                         if win_text == 3:
-                            add_experience(game_lvl // 2 + 10000)
+                            add_experience(game_lvl // 2 + 1)
                             add_money(game_lvl // 2 + 2)
                             save_game()
                             next_mini_game(game_lvl)
@@ -504,7 +504,7 @@ def start_mini_game(game_lvl):
                         run_game = False
                     if even.key == pygame.K_4:
                         if win_text == 4:
-                            add_experience(game_lvl // 2 + 10000)
+                            add_experience(game_lvl // 2 + 1)
                             add_money(game_lvl // 2 + 2)
                             save_game()
                             next_mini_game(game_lvl)
@@ -514,7 +514,7 @@ def start_mini_game(game_lvl):
         if not run_game:
             break
 
-        font_text = pygame.font.Font(os.path.join("data/fonts", "Visitor Rus.ttf"), 25)
+        font_text = pygame.font.Font(os.path.join("data/fonts", "Blazma-Regular.ttf"), 25)
 
         if text_index <= len(fraze_1):
             render_fraze_1 = font_text.render(fraze_1[:text_index], False, (0, 0, 0))
@@ -576,7 +576,7 @@ def start_mini_game(game_lvl):
 
 
 def next_mini_game(game_lvl):
-    fon = os.path.join("data/fonts", "Visitor Rus.ttf")
+    fon = os.path.join("data/fonts", "Blazma-Regular.ttf")
     font_text = pygame.font.Font(fon, 50)
     fraze_1 = font_text.render("Правильно", False, (0, 255, 0))
     font_text = pygame.font.Font(fon, 25)
@@ -610,7 +610,7 @@ def next_mini_game(game_lvl):
 
 def end_mini_game(game_lvl):
     global losed
-    fon = os.path.join("data/fonts", "Visitor Rus.ttf")
+    fon = os.path.join("data/fonts", "Blazma-Regular.ttf")
     font_text = pygame.font.Font(fon, 50)
     fraze_1 = font_text.render("Неправильно", False, (255, 0, 0))
     font_text = pygame.font.Font(fon, 25)
@@ -1088,7 +1088,7 @@ if __name__ == '__main__':  # Запуск программы
         obstacles_down_group.draw(screen)
         object_group.draw(screen)
 
-        font = pygame.font.Font(os.path.join("data/fonts", "Visitor Rus.ttf"), 30)
+        font = pygame.font.Font(os.path.join("data/fonts", "Blazma-Regular.ttf"), 30)
         if experience_index < 6:
             experien_text = f' опыт: {experience} / {experiences[experience_index]}'
         else:
