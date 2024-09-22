@@ -682,7 +682,7 @@ def start_two_location():  # Создание второй локации
 
 def start_three_location():  # Создание третей локации
     global npc, npc_text, npc_2, npc_text_2, player, camera, background, door_1, door_2, door_3, door_4, door_5, door_6, \
-        door_text_1, door_text_2, door_text_3, door_text_4, door_text_5, door_text_6, seller, seller_text
+        door_text_1, door_text_2, door_text_3, door_text_4, door_text_5, door_text_6, seller, seller_text, tree
     delete_all()
 
     npc = Npc(800, 170, 5)
@@ -693,6 +693,7 @@ def start_three_location():  # Создание третей локации
     seller_text = SellerText(1000, 410)
     player = Player(800, 500)
     camera = Camera()
+    tree = Flowers_Tree(700, 400)
     background = Background('maps/map_4.png', (1667, 1000))
     door_1 = Door(-100000, -100000, 1, False)
     door_2 = Door(-100000, -100000, 2, False)
@@ -773,6 +774,15 @@ class DoorText(pygame.sprite.Sprite):  # Нпс
             self.image = pygame.transform.scale(self.first_image, (0, 0))
 
 
+class Flowers_Tree(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(all_sprites, trees_group)
+        self.image = load_image('objects/tree_of_heaven.png')
+        self.image = pygame.transform.scale(self.image, (100, 160))
+        self.rect = self.image.get_rect().move(pos_x, pos_y)
+        self.mask = pygame.mask.from_surface(self.image)
+
+
 def save_game():  # Сохранения игры
     state = {
         'koef_experience': koef_experience,
@@ -835,6 +845,7 @@ player_group = pygame.sprite.Group()
 background_group = pygame.sprite.Group()
 camera_group = pygame.sprite.Group()
 object_group = pygame.sprite.Group()
+trees_group = pygame.sprite.Group()
 
 # Опыт
 experience = 0
@@ -872,6 +883,7 @@ seller = Seller(1200, 170, 1)
 seller_text = SellerText(1200, 110)
 player = Player(800, 500)
 camera = Camera()
+tree = Flowers_Tree(700, 400)
 background = Background('maps/map_1.png', (1667, 1000))
 syuyumbike = Syuyumbike(1100, 500, 1)
 door_1 = Door(400, 270, 1, True)
@@ -969,6 +981,7 @@ if __name__ == '__main__':  # Запуск программы
         background_group.draw(screen)
         object_group.draw(screen)
         player_group.draw(screen)
+        trees_group.draw(screen)
 
         font = pygame.font.Font(os.path.join("data/fonts", "Visitor Rus.ttf"), 30)
         experience_text = font.render(f' experience: {experience} / {experiences[experience_index]}',
