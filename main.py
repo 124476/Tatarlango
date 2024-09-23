@@ -57,7 +57,7 @@ class Camera:  # Камера, движение за игроком
 
 
 class Player(pygame.sprite.Sprite):  # Игрок
-    image = load_image('players_image/m.c.front_stop.png')
+    image = load_image('players/m.c.front_stop.png')
     image = pygame.transform.scale(image, (40, 60))
 
     def __init__(self, pos_x, pos_y):
@@ -79,22 +79,22 @@ class Player(pygame.sprite.Sprite):  # Игрок
         image = self.image
         if self.vis:
             if self.direction == 'left':
-                image = load_image('players_image/m.c.left_stop.png')
+                image = load_image('players/m.c.left_stop.png')
             elif self.direction == 'right':
-                image = load_image('players_image/m.c.right_stop.png')
+                image = load_image('players/m.c.right_stop.png')
             elif self.direction == 'down':
-                image = load_image('players_image/m.c.front_stop.png')
+                image = load_image('players/m.c.front_stop.png')
             elif self.direction == 'up':
-                image = load_image('players_image/m.c.back_stop.png')
+                image = load_image('players/m.c.back_stop.png')
         else:
             if self.direction == 'left':
-                image = load_image('players_image/m.c.left_stop_trans.png')
+                image = load_image('players/m.c.left_stop_trans.png')
             elif self.direction == 'right':
-                image = load_image('players_image/m.c.right_stop_trans.png')
+                image = load_image('players/m.c.right_stop_trans.png')
             elif self.direction == 'down':
-                image = load_image('players_image/m.c.front_stop_trans.png')
+                image = load_image('players/m.c.front_stop_trans.png')
             elif self.direction == 'up':
-                image = load_image('players_image/m.c.back_stop_trans.png')
+                image = load_image('players/m.c.back_stop_trans.png')
         self.image = pygame.transform.scale(image, (40, 60))
 
     def update(self, move_up, move_down, move_left, move_right):
@@ -108,9 +108,7 @@ class Player(pygame.sprite.Sprite):  # Игрок
         elif location == 2:
             stena = [(2, 0, 0)]
         elif location == 3:
-            stena = [(153, 217, 234), (185, 122, 87), (0, 162, 232),
-                     (187, 122, 87), (0, 187, 255), (55, 71, 79),
-                     (38, 52, 58), (71, 92, 102)]
+            stena = [(148, 222, 237), (0, 0, 0), (44, 27, 4), (141, 109, 69), (237, 191, 132)]
         elif location == 4:
             stena = [(2, 0, 0)]
 
@@ -147,10 +145,10 @@ class Player(pygame.sprite.Sprite):  # Игрок
                     self.back = True
             if self.vis:
                 image = load_image(
-                    f'players_image/m.c.left_walk_{self.step}.png')
+                    f'players/m.c.left_walk_{self.step}.png')
             else:
                 image = load_image(
-                    f'players_image/m.c.left_walk_{self.step}_trans.png')
+                    f'players/m.c.left_walk_{self.step}_trans.png')
         if move_right:  # Анимация игрока, когда он идет направо
             self.direction = 'right'
             self.rect.x += self.run
@@ -183,10 +181,10 @@ class Player(pygame.sprite.Sprite):  # Игрок
                     self.back = True
             if self.vis:
                 image = load_image(
-                    f'players_image/m.c.right_walk_{self.step}.png')
+                    f'players/m.c.right_walk_{self.step}.png')
             else:
                 image = load_image(
-                    f'players_image/m.c.right_walk_{self.step}_trans.png')
+                    f'players/m.c.right_walk_{self.step}_trans.png')
         if move_up:  # Анимация игрока, когда он идет вверх
             self.direction = 'up'
             self.rect.y -= self.run
@@ -217,10 +215,10 @@ class Player(pygame.sprite.Sprite):  # Игрок
                     self.back = True
             if self.vis:
                 image = load_image(
-                    f'players_image/m.c.back_walk_{self.step}.png')
+                    f'players/m.c.back_walk_{self.step}.png')
             else:
                 image = load_image(
-                    f'players_image/m.c.back_walk_{self.step}_trans.png')
+                    f'players/m.c.back_walk_{self.step}_trans.png')
         if move_down:  # Анимация игрока, когда он идет вниз
             self.direction = 'down'
             self.rect.y += self.run
@@ -252,10 +250,10 @@ class Player(pygame.sprite.Sprite):  # Игрок
                     self.back = True
             if self.vis:
                 image = load_image(
-                    f'players_image/m.c.front_walk_{self.step}.png')
+                    f'players/m.c.front_walk_{self.step}.png')
             else:
                 image = load_image(
-                    f'players_image/m.c.front_walk_{self.step}_trans.png')
+                    f'players/m.c.front_walk_{self.step}_trans.png')
         self.image = pygame.transform.scale(image, (40, 60))
 
 
@@ -285,15 +283,15 @@ class Syuyumbike(pygame.sprite.Sprite):  # Сююмбике
 class Npc(pygame.sprite.Sprite):  # Нпс
     def __init__(self, pos_x, pos_y, lvl_game):
         super().__init__(all_sprites, obstacles_group)
-        image = load_image(f'npc/npc/traveler.jpg')
-        self.image = pygame.transform.scale(image, (60, 100))
+        image = load_image(f'npc/npc_{lvl_game}.png')
+        self.height = 100
+        self.image = pygame.transform.scale(image, (60, self.height))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.lvl_game = lvl_game
         self.mask = pygame.mask.from_surface(self.image)
 
         self.x = pos_x
-        self.y = pos_y + 100
-        self.height = 100
+        self.y = pos_y + self.height
         self.height_pos = 10
         self.weight = 0
         self.weight_pos = 0
@@ -303,7 +301,7 @@ class Npc(pygame.sprite.Sprite):  # Нпс
 class NpcText(pygame.sprite.Sprite):  # Тест нпс
     def __init__(self, pos_x, pos_y):
         super().__init__(all_sprites, object_group)
-        self.first_image = load_image(f'npc/npc/traveler_text.jpg')
+        self.first_image = load_image(f'npc/traveler_text.jpg')
         self.image = pygame.transform.scale(self.first_image, (0, 0))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
 
@@ -319,7 +317,7 @@ class NpcText(pygame.sprite.Sprite):  # Тест нпс
 class Seller(pygame.sprite.Sprite):  # Продавец
     def __init__(self, pos_x, pos_y, lvl_game):
         super().__init__(all_sprites, obstacles_group)
-        image = load_image(f'npc/seller/seller.jpg')
+        image = load_image(f'seller/seller.jpg')
         self.image = pygame.transform.scale(image, (60, 100))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.lvl_game = lvl_game
@@ -337,7 +335,7 @@ class Seller(pygame.sprite.Sprite):  # Продавец
 class SellerText(pygame.sprite.Sprite):  # Текст продавца
     def __init__(self, pos_x, pos_y):
         super().__init__(all_sprites, object_group)
-        self.first_image = load_image(f'npc/seller/seller_text.jpg')
+        self.first_image = load_image(f'seller/seller_text.jpg')
         self.image = pygame.transform.scale(self.first_image, (0, 0))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
 
@@ -725,7 +723,7 @@ def start_two_location():  # Создание второй локации
     seller_text = SellerText(1200, 110)
     player = Player(800, 500)
     camera = Camera()
-    background = Background('maps/map_2.png', (1667, 1000))
+    background = Background('maps/map_2.png', (1299, 1068))
     door_1 = Door(-100000, -100000, 1, False)
     door_2 = Door(-100000, -100000, 2, False)
     door_3 = Door(400, 270, 3, True)
@@ -751,14 +749,14 @@ def start_three_location():  # Создание третей локации
     npc_text_2 = NpcText(1000, 110)
     seller = Seller(1000, 470, 3)
     seller_text = SellerText(1000, 410)
-    player = Player(800, 500)
+    player = Player(800, 1000)
     camera = Camera()
-    tree = Tree(700, 400)
-    background = Background('maps/map_4.png', (1667, 1000))
+    tree = Tree(425, 837)
+    background = Background('maps/map_4.png', (1920, 2325))
     door_1 = Door(-100000, -100000, 1, False)
     door_2 = Door(-100000, -100000, 2, False)
     door_3 = Door(-100000, -100000, 3, False)
-    door_4 = Door(400, 270, 4, True)
+    door_4 = Door(790, 625, 4, True)
     door_5 = Door(-100000, -100000, 5, False)
     door_6 = Door(-100000, -100000, 6, False)
     door_text_1 = DoorText(400, 210, door_1)
@@ -809,7 +807,7 @@ class Door(pygame.sprite.Sprite):  # Нпс
     def __init__(self, pos_x, pos_y, image, is_open):
         super().__init__(all_sprites, obstacles_group)
         image = load_image(f'doors/door_{image}/door_{2 if is_open else 1}.png')
-        self.image = pygame.transform.scale(image, (80, 100))
+        self.image = pygame.transform.scale(image, (60, 82))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.mask = pygame.mask.from_surface(self.image)
         self.is_open = is_open
@@ -976,19 +974,19 @@ npc_2 = Npc(1300, 170, 2)
 npc_text_2 = NpcText(1300, 110)
 seller = Seller(1500, 170, 1)
 seller_text = SellerText(1500, 110)
-player = Player(1300, 800)
+player = Player(2050, 800)
 camera = Camera()
-tree = Tree(1500, 500)
-house = House(1100, 460)
-background = Background('maps/map_1.png', (3000, 1500))
-syuyumbike = Syuyumbike(1670, 210, experience_index + 1)
-door_1 = Door(1240, 610, 1, experience_index >= 2)
-door_2 = Door(1500, 700, 2, experience_index >= 4)
+tree = Tree(1500000000, 500000000)
+house = House(1400, 460)
+background = Background('maps/map_1.png', (4500, 1500))
+syuyumbike = Syuyumbike(2420, 210, experience_index + 1)
+door_1 = Door(1551, 625, 1, experience_index >= 2)
+door_2 = Door(2250, 700, 2, experience_index >= 4)
 door_3 = Door(-100000, -100000, 3, False)
 door_4 = Door(-100000, -100000, 4, False)
 door_5 = Door(1700, 560, 5, experience_index == 6)
 door_6 = Door(-100000, -100000, 6, False)
-door_text_1 = DoorText(1240, 540, door_1)
+door_text_1 = DoorText(1551, 550, door_1)
 door_text_2 = DoorText(1500, 630, door_2)
 door_text_3 = DoorText(400, 210, door_3)
 door_text_4 = DoorText(400, 510, door_4)
@@ -998,8 +996,8 @@ door_text_6 = DoorText(400, 510, door_6)
 if __name__ == '__main__':  # Запуск программы
     pygame.init()
     pygame.display.set_caption('Tatarlango')
-    size = width, height = 800, 500
-    screen = pygame.display.set_mode(size)
+    size = width, height = 1200, 800
+    screen = pygame.display.set_mode(size, pygame.RESIZABLE)
     start_screen()
 
     i = 0
@@ -1082,6 +1080,14 @@ if __name__ == '__main__':  # Запуск программы
             else:
                 obstacles_down_group.add(i)
 
+        if location == 1:
+            screen.fill((21, 97, 21))
+        elif location == 2:
+            screen.fill((0, 0, 0))
+        elif location == 3:
+            screen.fill((148, 222, 237))
+        else:
+            screen.fill((2, 0, 0))
         background_group.draw(screen)
         obstacles_up_group.draw(screen)
         player_group.draw(screen)
