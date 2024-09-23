@@ -284,8 +284,34 @@ class Npc(pygame.sprite.Sprite):  # Нпс
     def __init__(self, pos_x, pos_y, lvl_game):
         super().__init__(all_sprites, obstacles_group)
         image = load_image(f'npc/npc_{lvl_game}.png')
-        self.height = 100
-        self.image = pygame.transform.scale(image, (60, self.height))
+        if lvl_game == 1:
+            self.image = pygame.transform.scale(image, (48, 100))
+            self.height = 100
+            self.y = pos_y + 100
+        elif lvl_game == 2:
+            self.image = pygame.transform.scale(image, (50, 100))
+            self.height = 100
+            self.y = pos_y + 100
+        elif lvl_game == 3:
+            self.image = pygame.transform.scale(image, (48, 100))
+            self.height = 100
+            self.y = pos_y + 100
+        elif lvl_game == 4:
+            self.image = pygame.transform.scale(image, (50, 100))
+            self.height = 100
+            self.y = pos_y + 100
+        elif lvl_game == 5:
+            self.image = pygame.transform.scale(image, (48, 100))
+            self.height = 100
+            self.y = pos_y + 100
+        elif lvl_game == 6:
+            self.image = pygame.transform.scale(image, (48, 100))
+            self.height = 100
+            self.y = pos_y + 100
+        else:
+            self.image = pygame.transform.scale(image, (50, 100))
+            self.height = 100
+            self.y = pos_y + 100
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.lvl_game = lvl_game
         self.mask = pygame.mask.from_surface(self.image)
@@ -317,8 +343,8 @@ class NpcText(pygame.sprite.Sprite):  # Тест нпс
 class Seller(pygame.sprite.Sprite):  # Продавец
     def __init__(self, pos_x, pos_y, lvl_game):
         super().__init__(all_sprites, obstacles_group)
-        image = load_image(f'seller/seller.jpg')
-        self.image = pygame.transform.scale(image, (60, 100))
+        image = load_image(f'seller/seller.png')
+        self.image = pygame.transform.scale(image, (68, 100))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.lvl_game = lvl_game
         self.mask = pygame.mask.from_surface(self.image)
@@ -352,7 +378,7 @@ def shop(tip):
     global koef_money, koef_experience, can_lose, money
     run_game = True
 
-    image = pygame.transform.scale(load_image(f'npc/seller/shop_{tip}.jpg'), (600, 400))
+    image = pygame.transform.scale(load_image(f'seller/shop_{tip}.jpg'), (600, 400))
 
     while run_game:
         for even in pygame.event.get():
@@ -410,14 +436,25 @@ def shop(tip):
             text_money = ""
             color_money = (0, 0, 0)
 
+        if player.loc == 1:
+            screen.fill((34, 177, 76))
+        elif player.loc == 2:
+            screen.fill((2, 0, 0))
+        elif player.loc == 3:
+            screen.fill((153, 217, 234))
+
         background_group.draw(screen)
         object_group.draw(screen)
         player_group.draw(screen)
 
-        font_2 = pygame.font.Font(os.path.join("data/fonts", "Blazma-Regular.ttf"), 30)
-        experience_text_2 = font_2.render(f' experience: {experience} / {experiences[experience_index]}',
-                                          False, (0, 0, 255))
-        money_text_2 = font_2.render(f' money: {money}', False, (255, 255, 0))
+        font_2 = pygame.font.Font(
+            os.path.join("data/fonts", "Blazma-Regular.ttf"), 30)
+        if experience_index < 6:
+            experien_text_2 = f' опыт: {experience} / {experiences[experience_index]}'
+        else:
+            experien_text_2 = f' макс'
+        experience_text_2 = font_2.render(experien_text_2, False, (0, 0, 255))
+        money_text_2 = font_2.render(f' монеты: {money}', False, (255, 255, 0))
         screen.blit(experience_text_2, (0, 0))
         screen.blit(money_text_2, (0, 30))
 
@@ -684,29 +721,29 @@ def start_first_location():  # Создание первой локации
         seller, seller_text, tree, house
     delete_all()
 
-    npc = Npc(1100, 170, 1)
-    npc_text = NpcText(1100, 110)
-    npc_2 = Npc(1300, 170, 2)
-    npc_text_2 = NpcText(1300, 110)
-    seller = Seller(1500, 170, 1)
-    seller_text = SellerText(1500, 110)
-    player = Player(1300, 800)
+    npc = Npc(1740, 230, 1)
+    npc_text = NpcText(1740, 160)
+    npc_2 = Npc(1910, 230, 2)
+    npc_text_2 = NpcText(1910, 160)
+    seller = Seller(1770, 920, 1)
+    seller_text = SellerText(1770, 850)
+    player = Player(2050, 800)
     camera = Camera()
-    tree = Tree(-15000, -1000000)
-    house = House(1100, 460)
-    background = Background('maps/map_1.png', (3000, 1500))
-    syuyumbike = Syuyumbike(1670, 210, experience_index + 1)
-    door_1 = Door(1240, 610, 1, experience_index >= 2)
-    door_2 = Door(1500, 700, 2, experience_index >= 4)
+    tree = Tree(1500000000, 500000000)
+    house = House(1400, 460)
+    background = Background('maps/map_1.png', (4500, 1500))
+    syuyumbike = Syuyumbike(2100, 210, experience_index + 1)
+    door_1 = Door(1551, 625, 1, experience_index >= 2)
+    door_2 = Door(1450, 350, 2, experience_index >= 4)
     door_3 = Door(-100000, -100000, 3, False)
     door_4 = Door(-100000, -100000, 4, False)
-    door_5 = Door(1700, 560, 5, experience_index == 6)
+    door_5 = Door(2141, 588, 5, experience_index == 6)
     door_6 = Door(-100000, -100000, 6, False)
-    door_text_1 = DoorText(1240, 540, door_1)
-    door_text_2 = DoorText(1500, 630, door_2)
+    door_text_1 = DoorText(1551, 550, door_1)
+    door_text_2 = DoorText(1450, 280, door_2)
     door_text_3 = DoorText(400, 210, door_3)
     door_text_4 = DoorText(400, 510, door_4)
-    door_text_5 = DoorText(1700, 490, door_5)
+    door_text_5 = DoorText(2141, 510, door_5)
     door_text_6 = DoorText(400, 510, door_6)
 
 
@@ -715,24 +752,24 @@ def start_two_location():  # Создание второй локации
         door_text_1, door_text_2, door_text_3, door_text_4, door_text_5, door_text_6, seller, seller_text
     delete_all()
 
-    npc = Npc(800, 170, 3)
-    npc_text = NpcText(800, 110)
-    npc_2 = Npc(1000, 170, 4)
-    npc_text_2 = NpcText(1000, 110)
-    seller = Seller(1200, 170, 2)
-    seller_text = SellerText(1200, 110)
-    player = Player(800, 500)
+    npc = Npc(550, 400, 3)
+    npc_text = NpcText(550, 330)
+    npc_2 = Npc(740, 400, 4)
+    npc_text_2 = NpcText(740, 330)
+    seller = Seller(290, 640, 2)
+    seller_text = SellerText(290, 570)
+    player = Player(637, 748)
     camera = Camera()
     background = Background('maps/map_2.png', (1299, 1068))
-    door_1 = Door(-100000, -100000, 1, False)
-    door_2 = Door(-100000, -100000, 2, False)
-    door_3 = Door(400, 270, 3, True)
-    door_4 = Door(-100000, -100000, 4, False)
-    door_5 = Door(-100000, -100000, 5, False)
-    door_6 = Door(-100000, -100000, 6, False)
+    door_1 = Door(-10000, -10000, 1, False)
+    door_2 = Door(-100000, -10000, 2, False)
+    door_3 = Door(970, 460, 3, True)
+    door_4 = Door(-10000, -10000, 4, False)
+    door_5 = Door(-10000, -10000, 5, False)
+    door_6 = Door(-10000, -10000, 6, False)
     door_text_1 = DoorText(400, 210, door_1)
     door_text_2 = DoorText(400, 510, door_2)
-    door_text_3 = DoorText(400, 210, door_3)
+    door_text_3 = DoorText(970, 390, door_3)
     door_text_4 = DoorText(400, 210, door_4)
     door_text_5 = DoorText(400, 210, door_5)
     door_text_6 = DoorText(400, 510, door_6)
@@ -743,26 +780,26 @@ def start_three_location():  # Создание третей локации
         door_text_1, door_text_2, door_text_3, door_text_4, door_text_5, door_text_6, seller, seller_text, tree
     delete_all()
 
-    npc = Npc(800, 170, 5)
-    npc_text = NpcText(800, 110)
-    npc_2 = Npc(1000, 170, 6)
-    npc_text_2 = NpcText(1000, 110)
-    seller = Seller(1000, 470, 3)
-    seller_text = SellerText(1000, 410)
-    player = Player(800, 1000)
+    npc = Npc(1210, 670, 5)
+    npc_text = NpcText(1210, 600)
+    npc_2 = Npc(1030, 647, 6)
+    npc_text_2 = NpcText(1030, 577)
+    seller = Seller(400, 1000, 3)
+    seller_text = SellerText(400, 1070)
+    player = Player(680, 750)
     camera = Camera()
-    tree = Tree(425, 837)
+    tree = Tree(340, 655)
     background = Background('maps/map_4.png', (1920, 2325))
     door_1 = Door(-100000, -100000, 1, False)
     door_2 = Door(-100000, -100000, 2, False)
     door_3 = Door(-100000, -100000, 3, False)
-    door_4 = Door(790, 625, 4, True)
+    door_4 = Door(685, 612, 4, True)
     door_5 = Door(-100000, -100000, 5, False)
     door_6 = Door(-100000, -100000, 6, False)
     door_text_1 = DoorText(400, 210, door_1)
     door_text_2 = DoorText(400, 510, door_2)
     door_text_3 = DoorText(400, 210, door_3)
-    door_text_4 = DoorText(400, 210, door_4)
+    door_text_4 = DoorText(685, 542, door_4)
     door_text_5 = DoorText(400, 210, door_5)
     door_text_6 = DoorText(400, 510, door_6)
 
@@ -792,7 +829,7 @@ def start_four_location():  # Создание третей локации
 def add_experience(count):
     global experience, experience_index
     experience += count * koef_experience
-    if experience_index != 7 and experiences[experience_index] <= experience:
+    if experience_index != 6 and experiences[experience_index] <= experience:
         experience -= experiences[experience_index]
         experience_index += 1
         syuyumbike.update(syuyumbike.lvl + 1)
@@ -806,22 +843,34 @@ def add_money(count):
 class Door(pygame.sprite.Sprite):  # Нпс
     def __init__(self, pos_x, pos_y, image, is_open):
         super().__init__(all_sprites, obstacles_group)
-        image = load_image(f'doors/door_{image}/door_{2 if is_open else 1}.png')
-        self.image = pygame.transform.scale(image, (60, 82))
+        self.tips = image
+        image = load_image(f'doors/door_{self.tips}/door_{2 if is_open else 1}.png')
+        if self.tips == 1 or self.tips == 3:
+            self.image = pygame.transform.scale(image, (60, 82))
+            self.height = 82
+            self.y = pos_y + 82
+        elif self.tips == 2 or self.tips == 4:
+            self.image = pygame.transform.scale(image, (100, 100))
+            self.height = 100
+            self.y = pos_y + 100
+        elif self.tips == 5 or self.tips == 6:
+            self.image = pygame.transform.scale(image, (62, 73))
+            self.height = 0
+            self.y = pos_y + 73
+        else:
+            self.image = pygame.transform.scale(image, (80, 100))
+            self.height = 100
+            self.y = pos_y + 100
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.mask = pygame.mask.from_surface(self.image)
         self.is_open = is_open
 
         self.x = pos_x
         self.y = pos_y + 100
-        self.height = 100
         self.height_pos = 10
         self.weight = 0
         self.weight_pos = 0
         self.weight_flag = False
-
-    def update(self, image):
-        self.image = pygame.transform.scale(load_image(f'doors/door_{image}.png'), (80, 100))
 
 
 class DoorText(pygame.sprite.Sprite):  # Нпс
@@ -844,12 +893,12 @@ class Tree(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(all_sprites, obstacles_group, trees_group)
         self.image = load_image('objects/tree_of_heaven.png')
-        self.image = pygame.transform.scale(self.image, (100, 160))
+        self.image = pygame.transform.scale(self.image, (200, 320))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.mask = pygame.mask.from_surface(self.image)
         self.x = pos_x
-        self.y = pos_y + 150
-        self.height = 160
+        self.y = pos_y + 320
+        self.height = 320
         self.height_pos = 10
         self.weight = 0
         self.weight_pos = 0
@@ -968,35 +1017,35 @@ questions = {
 load_game()
 
 # Создание объектов
-npc = Npc(1100, 170, 1)
-npc_text = NpcText(1100, 110)
-npc_2 = Npc(1300, 170, 2)
-npc_text_2 = NpcText(1300, 110)
-seller = Seller(1500, 170, 1)
-seller_text = SellerText(1500, 110)
+npc = Npc(1740, 230, 1)
+npc_text = NpcText(1740, 160)
+npc_2 = Npc(1910, 230, 2)
+npc_text_2 = NpcText(1910, 160)
+seller = Seller(1770, 920, 1)
+seller_text = SellerText(1770, 850)
 player = Player(2050, 800)
 camera = Camera()
 tree = Tree(1500000000, 500000000)
 house = House(1400, 460)
 background = Background('maps/map_1.png', (4500, 1500))
-syuyumbike = Syuyumbike(2420, 210, experience_index + 1)
+syuyumbike = Syuyumbike(2100, 210, experience_index + 1)
 door_1 = Door(1551, 625, 1, experience_index >= 2)
-door_2 = Door(2250, 700, 2, experience_index >= 4)
+door_2 = Door(1450, 350, 2, experience_index >= 4)
 door_3 = Door(-100000, -100000, 3, False)
 door_4 = Door(-100000, -100000, 4, False)
-door_5 = Door(1700, 560, 5, experience_index == 6)
+door_5 = Door(2141, 588, 5, experience_index == 6)
 door_6 = Door(-100000, -100000, 6, False)
 door_text_1 = DoorText(1551, 550, door_1)
-door_text_2 = DoorText(1500, 630, door_2)
+door_text_2 = DoorText(1450, 280, door_2)
 door_text_3 = DoorText(400, 210, door_3)
 door_text_4 = DoorText(400, 510, door_4)
-door_text_5 = DoorText(1700, 490, door_5)
+door_text_5 = DoorText(2141, 510, door_5)
 door_text_6 = DoorText(400, 510, door_6)
 
 if __name__ == '__main__':  # Запуск программы
     pygame.init()
     pygame.display.set_caption('Tatarlango')
-    size = width, height = 1200, 800
+    size = width, height = 800, 500
     screen = pygame.display.set_mode(size, pygame.RESIZABLE)
     start_screen()
 
