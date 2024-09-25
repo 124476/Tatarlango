@@ -124,7 +124,7 @@ class Player(pygame.sprite.Sprite):  # Игрок
             for obstacle in obstacles_group:
                 if pygame.sprite.collide_mask(player, obstacle) and obstacle.weight_flag and \
                         player.x > obstacle.x + obstacle.weight_pos - obstacle.weight and \
-                        (player.y > obstacle.y > player.y - 10
+                        (player.y > obstacle.y > player.y - obstacle.height_pos_down
                          or obstacle.y - obstacle.height_pos < player.y < obstacle.y):
                     self.rect.x += self.run
                     self.x += self.run
@@ -160,8 +160,9 @@ class Player(pygame.sprite.Sprite):  # Игрок
 
             for obstacle in obstacles_group:
                 if pygame.sprite.collide_mask(player, obstacle) and obstacle.weight_flag \
-                        and player.x > obstacle.x + obstacle.weight_pos and (player.y > obstacle.y > player.y - 10
-                                                                             or obstacle.y - obstacle.height_pos < player.y < obstacle.y):
+                        and player.x > obstacle.x + obstacle.weight_pos and \
+                        (player.y > obstacle.y > player.y - obstacle.height_pos_down
+                         or obstacle.y - obstacle.height_pos < player.y < obstacle.y):
                     self.rect.x -= self.run
                     self.x -= self.run
                     break
@@ -195,7 +196,8 @@ class Player(pygame.sprite.Sprite):  # Игрок
                 self.y += self.run
 
             for obstacle in obstacles_group:
-                if pygame.sprite.collide_mask(player, obstacle) and player.y > obstacle.y > player.y - 10:
+                if pygame.sprite.collide_mask(player, obstacle) \
+                        and player.y > obstacle.y > player.y - obstacle.height_pos_down:
                     self.rect.y += self.run
                     self.y += self.run
                     break
@@ -269,6 +271,7 @@ class Syuyumbike(pygame.sprite.Sprite):  # Сююмбике
         self.lvl = lvl
         self.height = 451
         self.height_pos = 10
+        self.height_pos_down = 20
         self.weight = 0
         self.weight_pos = 0
         self.weight_flag = False
@@ -319,6 +322,7 @@ class Npc(pygame.sprite.Sprite):  # Нпс
         self.x = pos_x
         self.y = pos_y + self.height
         self.height_pos = 10
+        self.height_pos_down = 10
         self.weight = 0
         self.weight_pos = 0
         self.weight_flag = False
@@ -340,6 +344,26 @@ class NpcText(pygame.sprite.Sprite):  # Тест нпс
             self.image = pygame.transform.scale(self.first_image, (0, 0))
 
 
+class Firework(pygame.sprite.Sprite):  # Фейерверк
+    def __init__(self, pos_x, pos_y, index_firework):
+        super().__init__(all_sprites, firework_group)
+        image = load_image(f'objects/firework/firework_{index_firework}_1.png')
+        self.image = pygame.transform.scale(image, (100, 100))
+        self.rect = self.image.get_rect().move(pos_x, pos_y)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.index_firework = index_firework
+        self.index = 1
+        self.time_replace = 0
+
+    def update(self):
+        self.time_replace += 1
+        if self.time_replace >= 50:
+            self.index = self.index % 4 + 1
+            self.time_replace = 0
+        image = load_image(f'objects/firework/firework_{self.index_firework}_{self.index}.png')
+        self.image = pygame.transform.scale(image, (100, 100))
+
+
 class Seller(pygame.sprite.Sprite):  # Продавец
     def __init__(self, pos_x, pos_y, lvl_game):
         super().__init__(all_sprites, obstacles_group)
@@ -353,6 +377,7 @@ class Seller(pygame.sprite.Sprite):  # Продавец
         self.y = pos_y + 100
         self.height = 100
         self.height_pos = 10
+        self.height_pos_down = 10
         self.weight = 0
         self.weight_pos = 0
         self.weight_flag = False
@@ -483,14 +508,20 @@ def terminate():
 
 def start_mini_game(game_lvl):
     global background, player, money, background
-    delete_all()
+
+    if location == 1:
+        delete_first_location()
+    elif location == 2:
+        delete_two_location()
+    elif location == 3:
+        delete_three_location()
 
     background = Background('maps/map_3.png', (900, 500))
     player = Player(400, 300)
     text_index = 0
     run_game = True
 
-    quests = [j for j in questions if j['tip'] == str(game_lvl)]
+    quests = [j for j in questions if j['tip'] == str(game_lvl) and int(j['lvl']) <= experience_index + 1]
 
     quest_index = randint(0, len(quests) - 1)
     start_quest = ['answer_one', 'answer_two', 'answer_three', 'answer_four']
@@ -682,10 +713,9 @@ def end_mini_game(game_lvl):
         clock.tick(35)
 
 
-def delete_all():  # Удаление всех объектов
-    global npc, npc_text, npc_2, npc_text_2, player, camera, background, syuyumbike, door_1, door_2, door_text_1, \
-        door_text_2, door_3, door_text_4, door_3, door_text_4, seller, seller_text, door_5, door_6, door_text_5, \
-        door_text_6
+def delete_first_location():  # Удаление всех объектов первой локации
+    global npc, npc_text, npc_2, npc_text_2, player, camera, background, syuyumbike, door_1, door_2, \
+        door_5, door_text_1, door_text_2, door_text_5, seller, seller_text, house
 
     for index_sprite in all_sprites:
         index_sprite.x = -10000000
@@ -701,25 +731,72 @@ def delete_all():  # Удаление всех объектов
     syuyumbike.kill()
     door_1.kill()
     door_2.kill()
-    door_3.kill()
-    door_4.kill()
     door_5.kill()
-    door_6.kill()
     door_text_1.kill()
     door_text_2.kill()
-    door_text_3.kill()
-    door_text_4.kill()
     door_text_5.kill()
-    door_text_6.kill()
+    house.kill()
+
+
+def delete_two_location():  # Удаление всех объектов второй локации
+    global npc, npc_text, npc_2, npc_text_2, player, camera, background, door_3, door_text_3, seller, seller_text
+
+    for index_sprite in all_sprites:
+        index_sprite.x = -10000000
+
+    player.kill()
+    npc.kill()
+    npc_text.kill()
+    npc_2.kill()
+    npc_text_2.kill()
+    seller.kill()
+    seller_text.kill()
+    background.kill()
+    syuyumbike.kill()
+    door_3.kill()
+    door_text_3.kill()
+    house.kill()
+
+
+def delete_three_location():  # Удаление всех объектов третей локации
+    global npc, npc_text, npc_2, npc_text_2, player, camera, background, door_4, door_text_4, seller, seller_text, tree
+
+    for index_sprite in all_sprites:
+        index_sprite.x = -10000000
+
+    player.kill()
+    npc.kill()
+    npc_text.kill()
+    npc_2.kill()
+    npc_text_2.kill()
+    seller.kill()
+    seller_text.kill()
+    background.kill()
+    syuyumbike.kill()
+    door_4.kill()
+    door_text_4.kill()
     house.kill()
     tree.kill()
 
 
+def delete_four_location():  # Удаление всех объектов четвертой локации
+    global player, camera, background, syuyumbike, door_6, door_text_6, firework_1, firework_2
+
+    for index_sprite in all_sprites:
+        index_sprite.x = -10000000
+
+    player.kill()
+    background.kill()
+    syuyumbike.kill()
+    door_6.kill()
+    door_text_6.kill()
+    firework_1.kill()
+    firework_2.kill()
+
+
 def start_first_location():  # Создание первой локации
-    global npc, npc_text, npc_2, npc_text_2, player, camera, background, syuyumbike, door_1, door_2, door_3, door_4, \
-        door_5, door_6, door_text_1, door_text_2, door_text_3, door_text_4, door_text_5, door_text_6, \
-        seller, seller_text, tree, house
-    delete_all()
+    global npc, npc_text, npc_2, npc_text_2, player, camera, background, syuyumbike, door_1, door_2, \
+        door_5, door_text_1, door_text_2, door_text_5, seller, seller_text, house
 
     npc = Npc(1740, 230, 1)
     npc_text = NpcText(1740, 160)
@@ -729,28 +806,19 @@ def start_first_location():  # Создание первой локации
     seller_text = SellerText(1770, 850)
     player = Player(2050, 800)
     camera = Camera()
-    tree = Tree(1500000000, 500000000)
     house = House(1400, 460)
     background = Background('maps/map_1.png', (4500, 1500))
     syuyumbike = Syuyumbike(2100, 210, experience_index + 1)
     door_1 = Door(1551, 625, 1, experience_index >= 2)
     door_2 = Door(1450, 350, 2, experience_index >= 4)
-    door_3 = Door(-100000, -100000, 3, False)
-    door_4 = Door(-100000, -100000, 4, False)
     door_5 = Door(2141, 588, 5, experience_index == 6)
-    door_6 = Door(-100000, -100000, 6, False)
     door_text_1 = DoorText(1551, 550, door_1)
     door_text_2 = DoorText(1450, 280, door_2)
-    door_text_3 = DoorText(400, 210, door_3)
-    door_text_4 = DoorText(400, 510, door_4)
     door_text_5 = DoorText(2141, 510, door_5)
-    door_text_6 = DoorText(400, 510, door_6)
 
 
 def start_two_location():  # Создание второй локации
-    global npc, npc_text, npc_2, npc_text_2, player, camera, background, door_1, door_2, door_3, door_4, door_5, door_6, \
-        door_text_1, door_text_2, door_text_3, door_text_4, door_text_5, door_text_6, seller, seller_text
-    delete_all()
+    global npc, npc_text, npc_2, npc_text_2, player, camera, background, door_3, door_text_3, seller, seller_text
 
     npc = Npc(550, 400, 3)
     npc_text = NpcText(550, 330)
@@ -761,69 +829,37 @@ def start_two_location():  # Создание второй локации
     player = Player(637, 748)
     camera = Camera()
     background = Background('maps/map_2.png', (1299, 1068))
-    door_1 = Door(-10000, -10000, 1, False)
-    door_2 = Door(-100000, -10000, 2, False)
-    door_3 = Door(970, 460, 3, True)
-    door_4 = Door(-10000, -10000, 4, False)
-    door_5 = Door(-10000, -10000, 5, False)
-    door_6 = Door(-10000, -10000, 6, False)
-    door_text_1 = DoorText(400, 210, door_1)
-    door_text_2 = DoorText(400, 510, door_2)
-    door_text_3 = DoorText(970, 390, door_3)
-    door_text_4 = DoorText(400, 210, door_4)
-    door_text_5 = DoorText(400, 210, door_5)
-    door_text_6 = DoorText(400, 510, door_6)
+    door_3 = Door(970, 456, 3, True)
+    door_text_3 = DoorText(970, 385, door_3)
 
 
 def start_three_location():  # Создание третей локации
-    global npc, npc_text, npc_2, npc_text_2, player, camera, background, door_1, door_2, door_3, door_4, door_5, door_6, \
-        door_text_1, door_text_2, door_text_3, door_text_4, door_text_5, door_text_6, seller, seller_text, tree
-    delete_all()
+    global npc, npc_text, npc_2, npc_text_2, player, camera, background, door_4, door_text_4, seller, seller_text, tree
 
     npc = Npc(1210, 670, 5)
     npc_text = NpcText(1210, 600)
     npc_2 = Npc(1030, 647, 6)
     npc_text_2 = NpcText(1030, 577)
     seller = Seller(400, 1000, 3)
-    seller_text = SellerText(400, 1070)
+    seller_text = SellerText(400, 930)
     player = Player(680, 750)
     camera = Camera()
     tree = Tree(340, 655)
     background = Background('maps/map_4.png', (1920, 2325))
-    door_1 = Door(-100000, -100000, 1, False)
-    door_2 = Door(-100000, -100000, 2, False)
-    door_3 = Door(-100000, -100000, 3, False)
     door_4 = Door(685, 612, 4, True)
-    door_5 = Door(-100000, -100000, 5, False)
-    door_6 = Door(-100000, -100000, 6, False)
-    door_text_1 = DoorText(400, 210, door_1)
-    door_text_2 = DoorText(400, 510, door_2)
-    door_text_3 = DoorText(400, 210, door_3)
     door_text_4 = DoorText(685, 542, door_4)
-    door_text_5 = DoorText(400, 210, door_5)
-    door_text_6 = DoorText(400, 510, door_6)
 
 
 def start_four_location():  # Создание третей локации
-    global npc_text_2, player, camera, background, door_1, door_2, door_3, door_4, door_5, door_6, \
-        door_text_1, door_text_2, door_text_3, door_text_4, door_text_5, door_text_6
-    delete_all()
+    global npc_text_2, player, camera, background, door_6, door_text_6, firework_1, firework_2
 
     player = Player(450, 400)
     camera = Camera()
     background = Background('maps/map_5.png', (900, 800))
-    door_1 = Door(-100000, -100000, 1, False)
-    door_2 = Door(-100000, -100000, 2, False)
-    door_3 = Door(-100000, -100000, 3, False)
-    door_4 = Door(-100000, -100000, 4, False)
-    door_5 = Door(-100000, -100000, 5, False)
     door_6 = Door(600, 300, 6, True)
-    door_text_1 = DoorText(400, 210, door_1)
-    door_text_2 = DoorText(400, 510, door_2)
-    door_text_3 = DoorText(400, 210, door_3)
-    door_text_4 = DoorText(400, 210, door_4)
-    door_text_5 = DoorText(300, 240, door_5)
     door_text_6 = DoorText(600, 240, door_6)
+    firework_1 = Firework(100, 300, 1)
+    firework_2 = Firework(700, 300, 2)
 
 
 def add_experience(count):
@@ -845,6 +881,7 @@ class Door(pygame.sprite.Sprite):  # Нпс
         super().__init__(all_sprites, obstacles_group)
         self.tips = image
         image = load_image(f'doors/door_{self.tips}/door_{2 if is_open else 1}.png')
+        self.height_pos_down = 10
         if self.tips == 1 or self.tips == 3:
             self.image = pygame.transform.scale(image, (60, 82))
             self.height = 82
@@ -855,8 +892,9 @@ class Door(pygame.sprite.Sprite):  # Нпс
             self.y = pos_y + 100
         elif self.tips == 5 or self.tips == 6:
             self.image = pygame.transform.scale(image, (62, 73))
-            self.height = 0
-            self.y = pos_y + 73
+            self.height = 73
+            self.y = pos_y + 50
+            self.height_pos_down = 2
         else:
             self.image = pygame.transform.scale(image, (80, 100))
             self.height = 100
@@ -902,6 +940,7 @@ class Tree(pygame.sprite.Sprite):
         self.height_pos = 10
         self.weight = 0
         self.weight_pos = 0
+        self.height_pos_down = 10
         self.weight_flag = False
 
 
@@ -916,6 +955,7 @@ class House(pygame.sprite.Sprite):
         self.y = pos_y + 250
         self.height = 210
         self.height_pos = 100
+        self.height_pos_down = 20
         self.weight = 280
         self.weight_pos = 10
         self.weight_flag = True
@@ -956,6 +996,7 @@ def load_game():  # Загрузка сохраненной игры
             questions.append({
                 'id': bytes(j['id']).decode(),
                 'tip': bytes(j['tip']).decode(),
+                'lvl': bytes(j['lvl']).decode(),
                 'question': bytes(j['question']).decode(),
                 'answer_one': bytes(j['answer_one']).decode(),
                 'answer_two': bytes(j['answer_two']).decode(),
@@ -985,6 +1026,7 @@ camera_group = pygame.sprite.Group()
 object_group = pygame.sprite.Group()
 trees_group = pygame.sprite.Group()
 obstacles_group = pygame.sprite.Group()
+firework_group = pygame.sprite.Group()
 
 # Опыт
 experience = 0
@@ -1026,6 +1068,8 @@ seller_text = SellerText(1770, 850)
 player = Player(2050, 800)
 camera = Camera()
 tree = Tree(1500000000, 500000000)
+firework_1 = Firework(1500000000, 500000000, 1)
+firework_2 = Firework(1500000000, 500000000, 2)
 house = House(1400, 460)
 background = Background('maps/map_1.png', (4500, 1500))
 syuyumbike = Syuyumbike(2100, 210, experience_index + 1)
@@ -1066,23 +1110,29 @@ if __name__ == '__main__':  # Запуск программы
                     if pygame.sprite.collide_mask(player, seller):
                         shop(location)
 
-                    if pygame.sprite.collide_mask(player, door_1) and door_1.is_open:
+                    if location == 1 and pygame.sprite.collide_mask(player, door_1) and door_1.is_open:
                         location = 2
+                        delete_first_location()
                         start_two_location()
-                    if pygame.sprite.collide_mask(player, door_2) and door_2.is_open:
+                    if location == 1 and pygame.sprite.collide_mask(player, door_2) and door_2.is_open:
                         location = 3
+                        delete_first_location()
                         start_three_location()
-                    if pygame.sprite.collide_mask(player, door_3) and door_3.is_open:
+                    if location == 2 and pygame.sprite.collide_mask(player, door_3) and door_3.is_open:
                         location = 1
+                        delete_two_location()
                         start_first_location()
-                    if pygame.sprite.collide_mask(player, door_4) and door_4.is_open:
+                    if location == 3 and pygame.sprite.collide_mask(player, door_4) and door_4.is_open:
                         location = 1
+                        delete_three_location()
                         start_first_location()
-                    if pygame.sprite.collide_mask(player, door_5) and door_5.is_open:
+                    if location == 1 and pygame.sprite.collide_mask(player, door_5) and door_5.is_open:
                         location = 4
+                        delete_first_location()
                         start_four_location()
-                    if pygame.sprite.collide_mask(player, door_6) and door_6.is_open:
+                    if location == 4 and pygame.sprite.collide_mask(player, door_6) and door_6.is_open:
                         location = 1
+                        delete_four_location()
                         start_first_location()
             if event.type == pygame.KEYUP:
                 player.stop()
@@ -1120,6 +1170,7 @@ if __name__ == '__main__':  # Запуск программы
             camera.apply(sprite)
         camera.update(player)
 
+        firework_group.update()
         obstacles_up_group = pygame.sprite.Group()
         obstacles_down_group = pygame.sprite.Group()
 
@@ -1137,11 +1188,13 @@ if __name__ == '__main__':  # Запуск программы
             screen.fill((148, 222, 237))
         else:
             screen.fill((2, 0, 0))
+
         background_group.draw(screen)
         obstacles_up_group.draw(screen)
         player_group.draw(screen)
         obstacles_down_group.draw(screen)
         object_group.draw(screen)
+        firework_group.draw(screen)
 
         font = pygame.font.Font(os.path.join("data/fonts", "Blazma-Regular.ttf"), 30)
         if experience_index < 6:
