@@ -4,19 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b6f0fdc-2b1f-450a-a0fe-df5878d69a75" name="Changes" comment="design processed 70%">
+    <list default="true" id="8b6f0fdc-2b1f-450a-a0fe-df5878d69a75" name="Changes" comment="design processed 95%">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/game_player.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/data/game_player.pkl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/maps/map_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/maps/map_5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/objects/firework/firework_1_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/objects/firework/firework_1_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/objects/firework/firework_1_3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/objects/firework/firework_1_4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/objects/firework/firework_2_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/objects/firework/firework_2_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/objects/firework/firework_2_3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/objects/firework/firework_2_4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/maps/map_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/maps/map_3.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,14 +152,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1702663593127</updated>
-    </task>
-    <task id="LOCAL-00028" summary="math game 2 act's processing">
-      <option name="closed" value="true" />
-      <created>1704897684849</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1704897684849</updated>
     </task>
     <task id="LOCAL-00029" summary="boss 2'nd act processing">
       <option name="closed" value="true" />
@@ -555,7 +537,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727210129658</updated>
     </task>
-    <option name="localTasksCounter" value="77" />
+    <task id="LOCAL-00077" summary="design processed 70%">
+      <option name="closed" value="true" />
+      <created>1727288431326</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1727288431327</updated>
+    </task>
+    <option name="localTasksCounter" value="78" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
