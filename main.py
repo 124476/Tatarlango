@@ -110,7 +110,7 @@ class Player(pygame.sprite.Sprite):  # Игрок
         elif location == 3:
             stena = [(148, 222, 237), (0, 0, 0), (44, 27, 4), (141, 109, 69), (237, 191, 132)]
         elif location == 4:
-            stena = [(2, 0, 0)]
+            stena = [(255, 215, 0), (176, 230, 242)]
 
         if move_left:  # Анимация игрока, когда он идет налево
             self.direction = 'left'
@@ -347,8 +347,8 @@ class NpcText(pygame.sprite.Sprite):  # Тест нпс
 class Firework(pygame.sprite.Sprite):  # Фейерверк
     def __init__(self, pos_x, pos_y, index_firework):
         super().__init__(all_sprites, firework_group)
-        image = load_image(f'objects/firework/firework_{index_firework}_1.png')
-        self.image = pygame.transform.scale(image, (100, 100))
+        image = load_image(f'objects/firework/firework_1.png')
+        self.image = pygame.transform.scale(image, (200, 210))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
         self.mask = pygame.mask.from_surface(self.image)
         self.index_firework = index_firework
@@ -357,11 +357,11 @@ class Firework(pygame.sprite.Sprite):  # Фейерверк
 
     def update(self):
         self.time_replace += 1
-        if self.time_replace >= 50:
-            self.index = self.index % 4 + 1
+        if self.time_replace >= 10:
+            self.index = self.index % 14 + 1
             self.time_replace = 0
-        image = load_image(f'objects/firework/firework_{self.index_firework}_{self.index}.png')
-        self.image = pygame.transform.scale(image, (100, 100))
+        image = load_image(f'objects/firework/firework_{self.index}.png')
+        self.image = pygame.transform.scale(image, (200, 210))
 
 
 class Seller(pygame.sprite.Sprite):  # Продавец
@@ -850,16 +850,16 @@ def start_three_location():  # Создание третей локации
     door_text_4 = DoorText(685, 542, door_4)
 
 
-def start_four_location():  # Создание третей локации
+def start_four_location():  # Создание пятой локации
     global npc_text_2, player, camera, background, door_6, door_text_6, firework_1, firework_2
 
-    player = Player(450, 400)
+    player = Player(780, 650)
     camera = Camera()
-    background = Background('maps/map_5.png', (900, 800))
-    door_6 = Door(600, 300, 6, True)
-    door_text_6 = DoorText(600, 240, door_6)
-    firework_1 = Firework(100, 300, 1)
-    firework_2 = Firework(700, 300, 2)
+    background = Background('maps/map_5.png', (1600, 1000))
+    door_6 = Door(769, 715, 6, True)
+    door_text_6 = DoorText(769, 645, door_6)
+    firework_1 = Firework(400, 70, 1)
+    firework_2 = Firework(1100, 70, 2)
 
 
 def add_experience(count):
@@ -1186,6 +1186,8 @@ if __name__ == '__main__':  # Запуск программы
             screen.fill((0, 0, 0))
         elif location == 3:
             screen.fill((148, 222, 237))
+        elif location == 4:
+            screen.fill((176, 230, 242))
         else:
             screen.fill((2, 0, 0))
 
