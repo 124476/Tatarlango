@@ -271,7 +271,7 @@ class Syuyumbike(pygame.sprite.Sprite):  # Сююмбике
         self.lvl = lvl
         self.height = 451
         self.height_pos = 10
-        self.height_pos_down = 20
+        self.height_pos_down = 30
         self.weight = 0
         self.weight_pos = 0
         self.weight_flag = False
@@ -331,7 +331,42 @@ class Npc(pygame.sprite.Sprite):  # Нпс
 class NpcText(pygame.sprite.Sprite):  # Тест нпс
     def __init__(self, pos_x, pos_y):
         super().__init__(all_sprites, object_group)
-        self.first_image = load_image(f'npc/traveler_text.jpg')
+        self.first_image = load_image(f'npc/npc_text.jpg')
+        self.image = pygame.transform.scale(self.first_image, (0, 0))
+        self.rect = self.image.get_rect().move(pos_x, pos_y)
+
+        self.mask = pygame.mask.from_surface(self.image)
+
+    def update(self, is_text):
+        if is_text:
+            self.image = pygame.transform.scale(self.first_image, (100, 50))
+        else:
+            self.image = pygame.transform.scale(self.first_image, (0, 0))
+
+
+class Statue(pygame.sprite.Sprite):  # Статуя
+    def __init__(self, pos_x, pos_y):
+        super().__init__(all_sprites, obstacles_group)
+        image = load_image(f'objects/statue/statue.png')
+        self.image = pygame.transform.scale(image, (128, 236))
+        self.height = 236
+        self.y = pos_y + 236
+        self.rect = self.image.get_rect().move(pos_x, pos_y)
+        self.mask = pygame.mask.from_surface(self.image)
+
+        self.x = pos_x
+        self.y = pos_y + self.height
+        self.height_pos = 10
+        self.height_pos_down = 10
+        self.weight = 0
+        self.weight_pos = 0
+        self.weight_flag = False
+
+
+class StatueText(pygame.sprite.Sprite):  # Тест статуи
+    def __init__(self, pos_x, pos_y):
+        super().__init__(all_sprites, object_group)
+        self.first_image = load_image(f'objects/statue/statue_text.jpg')
         self.image = pygame.transform.scale(self.first_image, (0, 0))
         self.rect = self.image.get_rect().move(pos_x, pos_y)
 
@@ -517,6 +552,7 @@ def start_mini_game(game_lvl):
         delete_three_location()
 
     background = Background('maps/map_3.png', (900, 500))
+    npc_image = pygame.transform.scale(load_image(f'npc/npc_{game_lvl}.png'), (100, 200))
     player = Player(400, 300)
     text_index = 0
     run_game = True
@@ -628,6 +664,7 @@ def start_mini_game(game_lvl):
         text_index += 1
 
         background_group.draw(screen)
+        screen.blit(npc_image, (100, 100))
         player_group.draw(screen)
 
         screen.blit(render_fraze_1, (260, 85))
@@ -648,6 +685,7 @@ def next_mini_game(game_lvl):
     font_text = pygame.font.Font(fon, 25)
     fraze_2 = font_text.render("E: Следующий", False, (0, 0, 0))
     fraze_3 = font_text.render("P: Выйти", False, (0, 0, 0))
+    npc_image = pygame.transform.scale(load_image(f'npc/npc_{game_lvl}.png'), (100, 200))
 
     run_game = True
     while run_game:
@@ -656,14 +694,21 @@ def next_mini_game(game_lvl):
                 terminate()
             elif even.type == pygame.KEYDOWN:
                 if even.key == pygame.K_e:
+                    player.y = 1000000
+                    player.kill()
+                    background.kill()
                     start_mini_game(game_lvl)
                     run_game = False
                 if even.key == pygame.K_p:
+                    player.y = 1000000
+                    player.kill()
+                    background.kill()
                     return
         if not run_game:
             break
 
         background_group.draw(screen)
+        screen.blit(npc_image, (100, 100))
         player_group.draw(screen)
 
         screen.blit(fraze_1, (260, 85))
@@ -676,10 +721,13 @@ def next_mini_game(game_lvl):
 
 def end_mini_game(game_lvl):
     global losed
+
+    npc_image = pygame.transform.scale(load_image(f'npc/npc_{game_lvl}.png'), (100, 200))
     fon = os.path.join("data/fonts", "Blazma-Regular.ttf")
     font_text = pygame.font.Font(fon, 50)
     fraze_1 = font_text.render("Неправильно", False, (255, 0, 0))
     font_text = pygame.font.Font(fon, 25)
+
     if can_lose > losed:
         fraze_2 = font_text.render("E: Следующий", False, (0, 0, 0))
     else:
@@ -695,6 +743,9 @@ def end_mini_game(game_lvl):
                 if even.key == pygame.K_e:
                     if can_lose > losed:
                         losed += 1
+                        player.y = 1000000
+                        player.kill()
+                        background.kill()
                         start_mini_game(game_lvl)
                         run_game = False
                 if even.key == pygame.K_p:
@@ -703,6 +754,7 @@ def end_mini_game(game_lvl):
             break
 
         background_group.draw(screen)
+        screen.blit(npc_image, (100, 100))
         player_group.draw(screen)
 
         screen.blit(fraze_1, (260, 85))
@@ -720,6 +772,7 @@ def delete_first_location():  # Удаление всех объектов пе�
     for index_sprite in all_sprites:
         index_sprite.x = -10000000
 
+    pygame.mixer.music.stop()
     player.kill()
     npc.kill()
     npc_text.kill()
@@ -744,6 +797,7 @@ def delete_two_location():  # Удаление всех объектов вто�
     for index_sprite in all_sprites:
         index_sprite.x = -10000000
 
+    pygame.mixer.music.stop()
     player.kill()
     npc.kill()
     npc_text.kill()
@@ -764,6 +818,7 @@ def delete_three_location():  # Удаление всех объектов тр�
     for index_sprite in all_sprites:
         index_sprite.x = -10000000
 
+    pygame.mixer.music.stop()
     player.kill()
     npc.kill()
     npc_text.kill()
@@ -780,23 +835,40 @@ def delete_three_location():  # Удаление всех объектов тр�
 
 
 def delete_four_location():  # Удаление всех объектов четвертой локации
-    global player, camera, background, syuyumbike, door_6, door_text_6, firework_1, firework_2
+    global player, camera, background, syuyumbike, door_6, door_text_6, firework_1, firework_2, statue, statue_text
 
     for index_sprite in all_sprites:
         index_sprite.x = -10000000
 
+    pygame.mixer.music.stop()
     player.kill()
     background.kill()
     syuyumbike.kill()
     door_6.kill()
     door_text_6.kill()
+    statue.kill()
+    statue_text.kill()
     firework_1.kill()
     firework_2.kill()
+
+
+def refresh_groups():
+    global all_sprites, player_group, background_group, camera_group, object_group, trees_group, obstacles_group, firework_group
+
+    all_sprites = pygame.sprite.Group()
+    player_group = pygame.sprite.Group()
+    background_group = pygame.sprite.Group()
+    camera_group = pygame.sprite.Group()
+    object_group = pygame.sprite.Group()
+    trees_group = pygame.sprite.Group()
+    obstacles_group = pygame.sprite.Group()
+    firework_group = pygame.sprite.Group()
 
 
 def start_first_location():  # Создание первой локации
     global npc, npc_text, npc_2, npc_text_2, player, camera, background, syuyumbike, door_1, door_2, \
         door_5, door_text_1, door_text_2, door_text_5, seller, seller_text, house
+    refresh_groups()
 
     npc = Npc(1740, 230, 1)
     npc_text = NpcText(1740, 160)
@@ -819,6 +891,7 @@ def start_first_location():  # Создание первой локации
 
 def start_two_location():  # Создание второй локации
     global npc, npc_text, npc_2, npc_text_2, player, camera, background, door_3, door_text_3, seller, seller_text
+    refresh_groups()
 
     npc = Npc(550, 400, 3)
     npc_text = NpcText(550, 330)
@@ -835,6 +908,7 @@ def start_two_location():  # Создание второй локации
 
 def start_three_location():  # Создание третей локации
     global npc, npc_text, npc_2, npc_text_2, player, camera, background, door_4, door_text_4, seller, seller_text, tree
+    refresh_groups()
 
     npc = Npc(1210, 670, 5)
     npc_text = NpcText(1210, 600)
@@ -851,7 +925,12 @@ def start_three_location():  # Создание третей локации
 
 
 def start_four_location():  # Создание пятой локации
-    global npc_text_2, player, camera, background, door_6, door_text_6, firework_1, firework_2
+    global npc_text_2, player, camera, background, door_6, door_text_6, firework_1, firework_2, statue, statue_text
+    refresh_groups()
+
+    pygame.mixer.music.load("data/music/mus_town.ogg")
+    pygame.mixer.music.set_volume(10)
+    pygame.mixer.music.play(loops=-1)
 
     player = Player(780, 650)
     camera = Camera()
@@ -860,6 +939,8 @@ def start_four_location():  # Создание пятой локации
     door_text_6 = DoorText(769, 645, door_6)
     firework_1 = Firework(400, 70, 1)
     firework_2 = Firework(1100, 70, 2)
+    statue = Statue(750, 200)
+    statue_text = StatueText(750, 130)
 
 
 def add_experience(count):
@@ -890,11 +971,15 @@ class Door(pygame.sprite.Sprite):  # Нпс
             self.image = pygame.transform.scale(image, (100, 100))
             self.height = 100
             self.y = pos_y + 100
-        elif self.tips == 5 or self.tips == 6:
+        elif self.tips == 5:
+            self.image = pygame.transform.scale(image, (62, 73))
+            self.height = 73
+            self.y = pos_y + 73
+            self.height_pos_down = 10
+        elif self.tips == 6:
             self.image = pygame.transform.scale(image, (62, 73))
             self.height = 73
             self.y = pos_y + 50
-            self.height_pos_down = 2
         else:
             self.image = pygame.transform.scale(image, (80, 100))
             self.height = 100
@@ -905,7 +990,7 @@ class Door(pygame.sprite.Sprite):  # Нпс
 
         self.x = pos_x
         self.y = pos_y + 100
-        self.height_pos = 10
+        self.height_pos = 30
         self.weight = 0
         self.weight_pos = 0
         self.weight_flag = False
@@ -1014,6 +1099,32 @@ def start_location():
         start_three_location()
 
 
+def titre_screen():  # Субтитры
+    j = 0
+    sybtit = load_image('camera-player/sybtit.png')
+
+    pygame.mixer.music.load("data/music/final_melody.ogg")
+    pygame.mixer.music.set_volume(80)
+    pygame.mixer.music.play(loops=-1)
+
+    while True:
+        for even in pygame.event.get():
+            if even.type == pygame.QUIT:
+                terminate()
+
+        screen.blit(sybtit, (0, -j))
+        pygame.display.flip()
+
+        j += 2
+        if j >= 1750:
+            pygame.mixer.music.load("data/music/mus_town.ogg")
+            pygame.mixer.music.set_volume(10)
+            pygame.mixer.music.play(loops=-1)
+            return
+
+        clock.tick(FPS)
+
+
 # Создание объектов всей игры
 clock = pygame.time.Clock()
 FPS = 60
@@ -1065,6 +1176,8 @@ npc_2 = Npc(1910, 230, 2)
 npc_text_2 = NpcText(1910, 160)
 seller = Seller(1770, 920, 1)
 seller_text = SellerText(1770, 850)
+statue = Statue(100000, 10000000)
+statue_text = StatueText(100000, 10000000)
 player = Player(2050, 800)
 camera = Camera()
 tree = Tree(1500000000, 500000000)
@@ -1109,6 +1222,8 @@ if __name__ == '__main__':  # Запуск программы
                         start_mini_game(npc_2.lvl_game)
                     if pygame.sprite.collide_mask(player, seller):
                         shop(location)
+                    if pygame.sprite.collide_mask(player, statue):
+                        titre_screen()
 
                     if location == 1 and pygame.sprite.collide_mask(player, door_1) and door_1.is_open:
                         location = 2
@@ -1158,6 +1273,7 @@ if __name__ == '__main__':  # Запуск программы
         npc_text.update(pygame.sprite.collide_mask(player, npc))
         npc_text_2.update(pygame.sprite.collide_mask(player, npc_2))
         seller_text.update(pygame.sprite.collide_mask(player, seller))
+        statue_text.update(pygame.sprite.collide_mask(player, statue))
         door_text_1.update(pygame.sprite.collide_mask(player, door_1))
         door_text_2.update(pygame.sprite.collide_mask(player, door_2))
         door_text_3.update(pygame.sprite.collide_mask(player, door_3))
