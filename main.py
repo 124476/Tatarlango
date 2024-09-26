@@ -1101,10 +1101,11 @@ def start_location():
 
 def titre_screen():  # Субтитры
     j = 0
-    sybtit = load_image('camera-player/sybtit.png')
+    i = 0
+    sybtit = load_image('camera-player/credits.png')
 
     pygame.mixer.music.load("data/music/final_melody.ogg")
-    pygame.mixer.music.set_volume(80)
+    pygame.mixer.music.set_volume(50)
     pygame.mixer.music.play(loops=-1)
 
     while True:
@@ -1112,11 +1113,17 @@ def titre_screen():  # Субтитры
             if even.type == pygame.QUIT:
                 terminate()
 
-        screen.blit(sybtit, (0, -j))
+        screen.fill((0, 0, 0))
+        screen.blit(sybtit, (0, -j + 400))
         pygame.display.flip()
 
-        j += 2
-        if j >= 1750:
+        j += 1.5
+        if 2500 < j < 3000:
+            # Постепенное уменьшение громкости
+            pygame.mixer.music.set_volume(
+                0.5 - i * 0.4 / 500)  # Примерное уменьшение до 0.1 за 3000 итераций
+            i += 1
+        elif j >= 3000:
             pygame.mixer.music.load("data/music/mus_town.ogg")
             pygame.mixer.music.set_volume(10)
             pygame.mixer.music.play(loops=-1)
