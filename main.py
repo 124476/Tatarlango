@@ -571,6 +571,18 @@ def start_mini_game(game_lvl):
     fraze_5 = '4: ' + quests[quest_index][end_quest[start_quest.index('answer_four')]]
     win_text = end_quest.index('answer_one') + 1
 
+    exp = 0
+    mon = 0
+    if game_lvl == 1 or game_lvl == 2:
+        exp = 1
+        mon = 2
+    elif game_lvl == 3 or game_lvl == 4:
+        exp = 1
+        mon = 2
+    elif game_lvl == 5 or game_lvl == 6:
+        exp = 1
+        mon = 2
+
     while run_game:
         for even in pygame.event.get():
             if even.type == pygame.QUIT:
@@ -579,8 +591,8 @@ def start_mini_game(game_lvl):
                 if text_index > len(fraze_1) + len(fraze_2) + len(fraze_3) + len(fraze_4) + len(fraze_5):
                     if even.key == pygame.K_1:
                         if win_text == 1:
-                            add_experience(game_lvl // 2 + 1)
-                            add_money(game_lvl // 2 + 2)
+                            add_experience(exp)
+                            add_money(mon)
                             save_game()
                             next_mini_game(game_lvl)
                         else:
@@ -588,8 +600,8 @@ def start_mini_game(game_lvl):
                         run_game = False
                     if even.key == pygame.K_2:
                         if win_text == 2:
-                            add_experience(game_lvl // 2 + 1)
-                            add_money(game_lvl // 2 + 2)
+                            add_experience(exp)
+                            add_money(mon)
                             save_game()
                             next_mini_game(game_lvl)
                         else:
@@ -597,8 +609,8 @@ def start_mini_game(game_lvl):
                         run_game = False
                     if even.key == pygame.K_3:
                         if win_text == 3:
-                            add_experience(game_lvl // 2 + 1)
-                            add_money(game_lvl // 2 + 2)
+                            add_experience(exp)
+                            add_money(mon)
                             save_game()
                             next_mini_game(game_lvl)
                         else:
