@@ -1138,7 +1138,7 @@ def start_location():
 
 
 def titre_screen():  # Субтитры
-    global current_size
+    global current_size, current_size
     j = 0
     i = 0
     sybtit = load_image('camera-player/credits.png')
@@ -1150,7 +1150,8 @@ def titre_screen():  # Субтитры
     while True:
         for even in pygame.event.get():
             if event.type == pygame.VIDEORESIZE:
-                curren_size = event.size
+                current_size = event.size
+
             if even.type == pygame.QUIT:
                 terminate()
 
