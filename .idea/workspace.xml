@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b6f0fdc-2b1f-450a-a0fe-df5878d69a75" name="Changes" comment="design 100%">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/music/act1_boss.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/music/act1_main.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/music/act2_boss.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/music/act2_main.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/music/act3_boss.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/music/act3_main.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/music/start_sound.ogg" beforeDir="false" />
-    </list>
+    <list default="true" id="8b6f0fdc-2b1f-450a-a0fe-df5878d69a75" name="Changes" comment="design 100%" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -94,7 +85,6 @@
   <component name="RunManager" selected="Python.main">
     <configuration name="2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Entangled_Tale" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -116,7 +106,6 @@
     </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Entangled_Tale" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
