@@ -435,13 +435,16 @@ class SellerText(pygame.sprite.Sprite):  # Текст продавца
 
 
 def shop(tip):
-    global koef_money, koef_experience, can_lose, money
+    global koef_money, koef_experience, can_lose, money, current_size
     run_game = True
 
     image = pygame.transform.scale(load_image(f'seller/shop_{tip}.jpg'), (600, 400))
 
     while run_game:
         for even in pygame.event.get():
+            if even.type == pygame.VIDEORESIZE:
+                current_size = even.size
+
             if even.type == pygame.QUIT:
                 terminate()
             elif even.type == pygame.KEYDOWN:
@@ -497,15 +500,15 @@ def shop(tip):
             color_money = (0, 0, 0)
 
         if player.loc == 1:
-            screen.fill((34, 177, 76))
+            virtual_screen.fill((34, 177, 76))
         elif player.loc == 2:
-            screen.fill((2, 0, 0))
+            virtual_screen.fill((2, 0, 0))
         elif player.loc == 3:
-            screen.fill((153, 217, 234))
+            virtual_screen.fill((153, 217, 234))
 
-        background_group.draw(screen)
-        object_group.draw(screen)
-        player_group.draw(screen)
+        background_group.draw(virtual_screen)
+        object_group.draw(virtual_screen)
+        player_group.draw(virtual_screen)
 
         font_2 = pygame.font.Font(
             os.path.join("data/fonts", "Blazma-Regular.ttf"), 30)
@@ -515,8 +518,8 @@ def shop(tip):
             experien_text_2 = f' макс'
         experience_text_2 = font_2.render(experien_text_2, False, (0, 0, 255))
         money_text_2 = font_2.render(f' монеты: {money}', False, (255, 255, 0))
-        screen.blit(experience_text_2, (0, 0))
-        screen.blit(money_text_2, (0, 30))
+        virtual_screen.blit(experience_text_2, (0, 0))
+        virtual_screen.blit(money_text_2, (0, 30))
 
         font_text = pygame.font.Font(os.path.join("data/fonts", "Blazma-Regular.ttf"), 50)
         fraze = font_text.render(bye_text, False, (0, 0, 0))
@@ -524,13 +527,16 @@ def shop(tip):
         font_text = pygame.font.Font(os.path.join("data/fonts", "Blazma-Regular.ttf"), 25)
         fraze_2 = font_text.render(f" {text_money}", False, color_money)
 
-        screen.blit(image, (100, 70))
-        screen.blit(fraze, (350, 250))
-        screen.blit(fraze_2, (325, 350))
+        virtual_screen.blit(image, (100, 70))
+        virtual_screen.blit(fraze, (350, 250))
+        virtual_screen.blit(fraze_2, (325, 350))
 
         if text_money != "Max":
             fraze_3 = font_text.render(f"E) Прокачать", False, (0, 0, 0))
-            screen.blit(fraze_3, (325, 380))
+            virtual_screen.blit(fraze_3, (325, 380))
+
+        scale_surface = pygame.transform.scale(virtual_screen, current_size)
+        screen.blit(scale_surface, (0, 0))
 
         pygame.display.flip()
         clock.tick(35)
@@ -542,7 +548,7 @@ def terminate():
 
 
 def start_mini_game(game_lvl):
-    global background, player, money, background
+    global background, player, money, background, current_size
 
     if location == 1:
         delete_first_location()
@@ -585,6 +591,9 @@ def start_mini_game(game_lvl):
 
     while run_game:
         for even in pygame.event.get():
+            if even.type == pygame.VIDEORESIZE:
+                current_size = even.size
+
             if even.type == pygame.QUIT:
                 terminate()
             elif even.type == pygame.KEYDOWN:
@@ -675,15 +684,18 @@ def start_mini_game(game_lvl):
 
         text_index += 1
 
-        background_group.draw(screen)
-        screen.blit(npc_image, (100, 100))
-        player_group.draw(screen)
+        background_group.draw(virtual_screen)
+        virtual_screen.blit(npc_image, (100, 100))
+        player_group.draw(virtual_screen)
 
-        screen.blit(render_fraze_1, (260, 85))
-        screen.blit(render_fraze_2, (260, 115))
-        screen.blit(render_fraze_3, (260, 145))
-        screen.blit(render_fraze_4, (260, 175))
-        screen.blit(render_fraze_5, (260, 205))
+        virtual_screen.blit(render_fraze_1, (260, 85))
+        virtual_screen.blit(render_fraze_2, (260, 115))
+        virtual_screen.blit(render_fraze_3, (260, 145))
+        virtual_screen.blit(render_fraze_4, (260, 175))
+        virtual_screen.blit(render_fraze_5, (260, 205))
+
+        scale_surface = pygame.transform.scale(virtual_screen, current_size)
+        screen.blit(scale_surface, (0, 0))
 
         pygame.display.flip()
         clock.tick(35)
@@ -691,6 +703,7 @@ def start_mini_game(game_lvl):
 
 
 def next_mini_game(game_lvl):
+    global current_size
     fon = os.path.join("data/fonts", "Blazma-Regular.ttf")
     font_text = pygame.font.Font(fon, 50)
     fraze_1 = font_text.render("Правильно", False, (0, 255, 0))
@@ -700,8 +713,12 @@ def next_mini_game(game_lvl):
     npc_image = pygame.transform.scale(load_image(f'npc/npc_{game_lvl}.png'), (100, 200))
 
     run_game = True
+
     while run_game:
         for even in pygame.event.get():
+            if even.type == pygame.VIDEORESIZE:
+                current_size = even.size
+
             if even.type == pygame.QUIT:
                 terminate()
             elif even.type == pygame.KEYDOWN:
@@ -719,20 +736,23 @@ def next_mini_game(game_lvl):
         if not run_game:
             break
 
-        background_group.draw(screen)
-        screen.blit(npc_image, (100, 100))
-        player_group.draw(screen)
+        background_group.draw(virtual_screen)
+        virtual_screen.blit(npc_image, (100, 100))
+        player_group.draw(virtual_screen)
 
-        screen.blit(fraze_1, (260, 85))
-        screen.blit(fraze_2, (260, 135))
-        screen.blit(fraze_3, (260, 165))
+        virtual_screen.blit(fraze_1, (260, 85))
+        virtual_screen.blit(fraze_2, (260, 135))
+        virtual_screen.blit(fraze_3, (260, 165))
+
+        scale_surface = pygame.transform.scale(virtual_screen, current_size)
+        screen.blit(scale_surface, (0, 0))
 
         pygame.display.flip()
         clock.tick(35)
 
 
 def end_mini_game(game_lvl):
-    global losed
+    global losed, current_size
 
     npc_image = pygame.transform.scale(load_image(f'npc/npc_{game_lvl}.png'), (100, 200))
     fon = os.path.join("data/fonts", "Blazma-Regular.ttf")
@@ -749,6 +769,9 @@ def end_mini_game(game_lvl):
     run_game = True
     while run_game:
         for even in pygame.event.get():
+            if even.type == pygame.VIDEORESIZE:
+                current_size = even.size
+
             if even.type == pygame.QUIT:
                 terminate()
             elif even.type == pygame.KEYDOWN:
@@ -765,13 +788,16 @@ def end_mini_game(game_lvl):
         if not run_game:
             break
 
-        background_group.draw(screen)
-        screen.blit(npc_image, (100, 100))
-        player_group.draw(screen)
+        background_group.draw(virtual_screen)
+        virtual_screen.blit(npc_image, (100, 100))
+        player_group.draw(virtual_screen)
 
-        screen.blit(fraze_1, (260, 85))
-        screen.blit(fraze_2, (260, 135))
-        screen.blit(fraze_3, (260, 165))
+        virtual_screen.blit(fraze_1, (260, 85))
+        virtual_screen.blit(fraze_2, (260, 135))
+        virtual_screen.blit(fraze_3, (260, 165))
+
+        scale_surface = pygame.transform.scale(virtual_screen, current_size)
+        screen.blit(scale_surface, (0, 0))
 
         pygame.display.flip()
         clock.tick(35)
@@ -1112,6 +1138,7 @@ def start_location():
 
 
 def titre_screen():  # Субтитры
+    global current_size
     j = 0
     i = 0
     sybtit = load_image('camera-player/credits.png')
@@ -1122,11 +1149,17 @@ def titre_screen():  # Субтитры
 
     while True:
         for even in pygame.event.get():
+            if event.type == pygame.VIDEORESIZE:
+                curren_size = event.size
             if even.type == pygame.QUIT:
                 terminate()
 
-        screen.fill((0, 0, 0))
-        screen.blit(sybtit, (0, -j + 400))
+        virtual_screen.fill((0, 0, 0))
+        virtual_screen.blit(sybtit, (0, -j + 400))
+
+        scale_surface = pygame.transform.scale(virtual_screen, current_size)
+        screen.blit(scale_surface, (0, 0))
+
         pygame.display.flip()
 
         j += 1.5
@@ -1222,15 +1255,22 @@ if __name__ == '__main__':  # Запуск программы
     pygame.init()
     pygame.display.set_caption('Tatarlango')
     size = width, height = 800, 500
-    screen = pygame.display.set_mode(size)
+    screen = pygame.display.set_mode(size, pygame.RESIZABLE)
+
+    virtual_screen = pygame.Surface((width, height))
+    current_size = screen.get_size()
+
     start_screen()
 
     i = 0
     running = True
     while running:  # Основной цикл
         for event in pygame.event.get():
+            if event.type == pygame.VIDEORESIZE:
+                current_size = event.size
             if event.type == pygame.QUIT:
                 running = False
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e:
                     if pygame.sprite.collide_mask(player, npc):
@@ -1316,22 +1356,22 @@ if __name__ == '__main__':  # Запуск программы
                 obstacles_down_group.add(i)
 
         if location == 1:
-            screen.fill((21, 97, 21))
+            virtual_screen.fill((21, 97, 21))
         elif location == 2:
-            screen.fill((0, 0, 0))
+            virtual_screen.fill((0, 0, 0))
         elif location == 3:
-            screen.fill((148, 222, 237))
+            virtual_screen.fill((148, 222, 237))
         elif location == 4:
-            screen.fill((176, 230, 242))
+            virtual_screen.fill((176, 230, 242))
         else:
-            screen.fill((2, 0, 0))
+            virtual_screen.fill((2, 0, 0))
 
-        background_group.draw(screen)
-        obstacles_up_group.draw(screen)
-        player_group.draw(screen)
-        obstacles_down_group.draw(screen)
-        object_group.draw(screen)
-        firework_group.draw(screen)
+        background_group.draw(virtual_screen)
+        obstacles_up_group.draw(virtual_screen)
+        player_group.draw(virtual_screen)
+        obstacles_down_group.draw(virtual_screen)
+        object_group.draw(virtual_screen)
+        firework_group.draw(virtual_screen)
 
         font = pygame.font.Font(os.path.join("data/fonts", "Blazma-Regular.ttf"), 30)
         if experience_index < 6:
@@ -1340,8 +1380,11 @@ if __name__ == '__main__':  # Запуск программы
             experien_text = f' макс'
         experience_text = font.render(experien_text, False, (0, 0, 255))
         money_text = font.render(f' монеты: {money}', False, (255, 255, 0))
-        screen.blit(experience_text, (0, 0))
-        screen.blit(money_text, (0, 30))
+        virtual_screen.blit(experience_text, (0, 0))
+        virtual_screen.blit(money_text, (0, 30))
+
+        scaled_surface = pygame.transform.scale(virtual_screen, current_size)
+        screen.blit(scaled_surface, (0, 0))
 
         pygame.display.flip()
         clock.tick(FPS)
